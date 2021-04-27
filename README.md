@@ -39,8 +39,8 @@ docker/
 ## Get started
 
 ```bash
-git clone https://github.com/what-is-the-final-repo-name.git
-cd whatever-the-package-dir-is
+git clone https://github.com/aws-mwaa-local-runner.git
+cd aws-mwaa-local-runner
 ```
 
 ### Step one: Building the Docker image

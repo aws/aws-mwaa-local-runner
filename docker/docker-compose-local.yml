@@ -21,6 +21,8 @@ services:
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
+            - FERNET_KEY=SET-A_FERNET_KEY_HERE
+#            - SECRETS=aws/secret/key,comma/splitted # optional
         logging:
             options:
                 max-size: 10m
@@ -28,6 +30,7 @@ services:
         volumes:
             - ${PWD}/dags:/usr/local/airflow/dags
             - ${PWD}/plugins:/usr/local/airflow/plugins
+            - ${PWD}/variables.json:/usr/local/airflow/variables.json
         ports:
             - "8080:8080"
         command: local-runner

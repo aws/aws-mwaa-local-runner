@@ -16,7 +16,7 @@ export \
   AIRFLOW_HOME \
   AIRFLOW__CORE__EXECUTOR \
   AIRFLOW__CORE__FERNET_KEY \
-  AIRFLOW__CORE__LOAD_EXAMPLES \
+  AIRFLOW__CORE__LOAD_EXAMPLES
 
 # Install custom python package if requirements.txt is present
 install_requirements() {
@@ -77,6 +77,17 @@ case "$1" in
     fi
     airflow create_user -r Admin -u admin -e admin@example.com -f admin -l user -p test
     exec airflow webserver
+    ;;
+  setvariables)
+    secrets_split=$(echo $SECRETS | tr "," "\n")
+    for secret in $secrets_split
+    do
+        echo $(aws secretsmanager get-secret-value --secret-id $secret  --query SecretString --output text) > /tmp/secret.json
+        airflow variables -i /tmp/secret.json
+        rm -rf /tmp/secret.json
+        sleep 1
+    done
+    airflow variables -i /usr/local/airflow/variables.json
     ;;
   resetdb)
     airflow resetdb -y

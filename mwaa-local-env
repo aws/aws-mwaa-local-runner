@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AIRFLOW_VERSION=1.10
+AIRFLOW_VERSION=2.0
 
 display_help() {
    # Display Help
@@ -50,7 +50,7 @@ validate_prereqs() {
 }
 
 build_image() {
-   docker build --rm --compress -t amazon/mwaa-local:1.10 ./docker
+   docker build --rm --compress -t amazon/mwaa-local:2.0 ./docker
 }
 
 case "$1" in

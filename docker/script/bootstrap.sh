@@ -2,6 +2,12 @@
 
 set -e
 
+# Upgrade pip version to latest
+python3 -m pip install --upgrade pip
+
+# Install wheel to avoid legacy setup.py install
+pip3 install wheel
+
 # On RHL and Centos based linux, openssl needs to be set as Python Curl SSL library
 export PYCURL_SSL_LIBRARY=openssl
 pip3 install $PIP_OPTION --compile pycurl
@@ -21,6 +27,9 @@ adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 
 # install watchtower for Cloudwatch logging
 pip3 install $PIP_OPTION watchtower==1.0.1
+
+# Install default providers
+pip3 install apache-airflow-providers-amazon
 
 # Use symbolic link to ensure Airflow 2.0's backport packages are in the same namespace as Airflow itself
 # see https://airflow.apache.org/docs/apache-airflow/stable/backport-providers.html#troubleshooting-installing-backport-packages
@@ -42,6 +51,9 @@ then
   pip3 freeze > /requirements.txt
 else
   # flask-swagger depends on PyYAML that are known to be vulnerable
-  # even though Airflow names flask-swagger as a dependency, it doesn't seem to use it.
-  pip3 uninstall -y flask-swagger
+  # even though Airflow 1.10 names flask-swagger as a dependency, it doesn't seem to use it.
+  if [ "$AIRFLOW_VERSION" = "1.10.12" ]
+  then
+    pip3 uninstall -y flask-swagger
+  fi
 fi

@@ -14,7 +14,7 @@ services:
             - "${PWD}/db-data:/var/lib/postgresql/data"
 
     local-runner:
-        image: amazon/mwaa-local:1.10
+        image: amazon/mwaa-local:2.0
         restart: always
         depends_on:
             - postgres

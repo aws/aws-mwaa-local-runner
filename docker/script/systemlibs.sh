@@ -6,7 +6,7 @@ yum update -y
 # install basic python environment
 yum install -y python37 gcc gcc-g++ python3-devel
 
-# JDBC and Java dependencies
+# JDBC and PyODBC dependencies
 yum install -y java-1.8.0-openjdk unixODBC-devel 
 
 # Database clients

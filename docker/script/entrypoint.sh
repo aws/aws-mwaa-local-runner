@@ -69,19 +69,19 @@ fi
 case "$1" in
   local-runner)
     install_requirements
-    airflow initdb
+    airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.
       airflow scheduler &
       sleep 2
     fi
-    airflow create_user -r Admin -u admin -e admin@example.com -f admin -l user -p test
+    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
     exec airflow webserver
     ;;
   resetdb)
-    airflow resetdb -y
+    airflow db reset -y
     sleep 2
-    airflow initdb
+    airflow db init
     ;;
   test-requirements)
     install_requirements

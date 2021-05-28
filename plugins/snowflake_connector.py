@@ -38,6 +38,7 @@ def get_local_snowflake_connection():
         "user": "<username>",
         "warehouse": "TDM_SANDBOX"
     }
+    print(connection_config)
     return connection_config
 
 
@@ -98,7 +99,7 @@ class SnowflakeConnectorHook(SnowflakeHook):
         """
         Runs a command or a list of commands. Pass a list of sql
         statements to the sql parameter to get them to execute
-        sequentially
+        sequentially (pulled from MWAA 2.0)
         :param sql: the sql string to be executed with possibly multiple statements,
           or a list of sql statements to execute
         :type sql: str or list
@@ -144,14 +145,6 @@ class SnowflakeConnectorOperator(SnowflakeOperator):
         Returns a snowflake.hook object
         """
         return SnowflakeConnectorHook()
-
-    # def execute(self, context):
-    #     self.log.info('Executing: %s', self.sql)
-    #     hook = self.get_hook()
-    #     hook.run(
-    #         self.sql,
-    #         autocommit=self.autocommit,
-    #         parameters=self.parameters)
 
 
 

@@ -1,0 +1,82 @@
+stages:
+  - test
+  - lint
+  - code-quality-deploy
+
+test-airflow-plugins:
+  only:
+    changes:
+      - dags/*.py
+      - tests/*.py
+      - .gitlab-ci.yml
+  stage: test
+  image: puckel/docker-airflow:1.10.9
+  script:
+    - pip install --upgrade pip
+    - pip install -r test-requirements.txt -r dags/requirements.txt
+    - AIRFLOW_HOME=. airflow initdb
+    - AIRFLOW_HOME=. nosetests . --with-coverage --cover-branches --cover-html --cover-package=. --with-xunit
+    - coverage xml
+  artifacts:
+    reports:
+      junit: nosetests.xml
+      cobertura: coverage.xml
+  tags:
+    - general
+
+pylint:
+  only:
+    changes:
+      - plugins/*.py
+      - tests/*.py
+      - .gitlab-ci.yml
+  stage: lint
+  image: python:3.7.3
+  before_script:
+    - mkdir -p public/badges public/lint
+    - echo undefined > public/badges/$CI_JOB_NAME.score
+    - pip install --upgrade pip
+    - pip install -r test-requirements.txt -r requirements.txt
+    - pip install pylint-gitlab
+  script:
+    - pylint --exit-zero --output-format=text $(find -type f -name "*.py" ! -path "**/.venv/**") | tee /tmp/pylint.txt
+    - sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' /tmp/pylint.txt > public/badges/$CI_JOB_NAME.score
+    - pylint --exit-zero --output-format=pylint_gitlab.GitlabCodeClimateReporter $(find -type f -name "*.py" ! -path "**/.venv/**") > codeclimate.json
+    - pylint --exit-zero --output-format=pylint_gitlab.GitlabPagesHtmlReporter $(find -type f -name "*.py" ! -path "**/.venv/**") > public/lint/index.html
+  after_script:
+    - anybadge --overwrite --label $CI_JOB_NAME --value=$(cat public/badges/$CI_JOB_NAME.score) --file=public/badges/$CI_JOB_NAME.svg 4=red 6=orange 8=yellow 10=green
+    - |
+      echo "Your score is: $(cat public/badges/$CI_JOB_NAME.score)"
+  artifacts:
+    paths:
+      - public
+    reports:
+      codequality: codeclimate.json
+    when: always
+  tags:
+    - general
+
+pages:
+  stage: code-quality-deploy
+  image: alpine:latest
+  needs:
+    - job: test-plugins
+      artifacts: true
+    - job: pylint
+      artifacts: true
+  script:
+    - mv cover/ public/
+    - echo
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    changes:
+      - plugins/*.py
+      - tests/*.py
+      - .gitlab-ci.yml
+    refs:
+      - master
+  tags:
+    - general

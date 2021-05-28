@@ -14,7 +14,7 @@ from airflow.plugins_manager import AirflowPlugin
 from cryptography.hazmat.primitives import serialization as crypto_serialization
 from cryptography.hazmat.backends import default_backend as crypto_default_backend
 
-TDM_NAME = os.environ.get('SNOWFLAKE_DATABASE', 'tdm_test')
+TDM_NAME = os.environ.get('SNOWFLAKE_DATABASE', 'tdm_sandbox')
 TDM_SHORT_NAME = TDM_NAME[4:]
 SECRETS_MANAGER_KEY = f'tdm/{TDM_NAME.lower()}_prod_etl_srvc'
 
@@ -38,6 +38,7 @@ def get_local_snowflake_connection():
         "user": "<username>",
         "warehouse": "TDM_SANDBOX"
     }
+    print(connection_config)
     return connection_config
 
 
@@ -98,7 +99,7 @@ class SnowflakeConnectorHook(SnowflakeHook):
         """
         Runs a command or a list of commands. Pass a list of sql
         statements to the sql parameter to get them to execute
-        sequentially
+        sequentially (pulled from MWAA 2.0)
         :param sql: the sql string to be executed with possibly multiple statements,
           or a list of sql statements to execute
         :type sql: str or list
@@ -144,14 +145,6 @@ class SnowflakeConnectorOperator(SnowflakeOperator):
         Returns a snowflake.hook object
         """
         return SnowflakeConnectorHook()
-
-    # def execute(self, context):
-    #     self.log.info('Executing: %s', self.sql)
-    #     hook = self.get_hook()
-    #     hook.run(
-    #         self.sql,
-    #         autocommit=self.autocommit,
-    #         parameters=self.parameters)
 
 
 

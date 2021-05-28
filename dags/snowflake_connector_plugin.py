@@ -41,20 +41,11 @@ create_insert_query = [
             CURRENT_USER();""",
 ]
 
-
-def row_count(**context):
-    sf_hook = SnowflakeConnectorOperator()
-    result = sf_hook.execute("select count(*) from TDM_SANDBOX.SANDBOX.JUNKY_TEST")
-    logging.info(f"Number of rows in `TDM_SANDBOX.SANDBOX.JUNKY_TEST`  - {result[0]}")
-
-
 with dag:
     dummy_task = DummyOperator(task_id='dummy_task', dag=dag)
 
     operator_task = SnowflakeConnectorOperator(sql=create_insert_query,
                                                task_id='testing_snowflake_operator_task',
                                                dag=dag)
-
-    get_count = PythonOperator(task_id="get_count", python_callable=row_count)
 
 dummy_task >> operator_task >> get_count

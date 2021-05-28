@@ -1,0 +1,2 @@
+boto3==1.17.80
+snowflake-connector-python==2.4.3

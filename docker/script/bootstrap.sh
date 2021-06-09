@@ -52,7 +52,7 @@ then
 else
   # flask-swagger depends on PyYAML that are known to be vulnerable
   # even though Airflow 1.10 names flask-swagger as a dependency, it doesn't seem to use it.
-  if [ "$AIRFLOW_VERSION" = "1.10.12" ]
+  if [ "$AIRFLOW_VERSION" = "1.10.15" ]
   then
     pip3 uninstall -y flask-swagger
   fi

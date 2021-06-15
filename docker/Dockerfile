@@ -1,5 +1,5 @@
-# VERSION 1.10
-# AUTHOR: Subash Canapathy
+# VERSION 1.10.15
+# AUTHOR: Subash Canapathy/Cary Hawkins
 # DESCRIPTION: Amazon MWAA Local Dev Environment
 # BUILD: docker build --rm -t amazon/mwaa-local .
 

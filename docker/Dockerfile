@@ -1,5 +1,5 @@
-# VERSION 1.10
-# AUTHOR: Subash Canapathy
+# VERSION 1.10.15
+# AUTHOR: Subash Canapathy/Cary Hawkins
 # DESCRIPTION: Amazon MWAA Local Dev Environment
 # BUILD: docker build --rm -t amazon/mwaa-local .
 
@@ -7,7 +7,7 @@ FROM amazonlinux
 LABEL maintainer="amazon"
 
 # Airflow
-ARG AIRFLOW_VERSION=1.10.12
+ARG AIRFLOW_VERSION=1.10.15
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""

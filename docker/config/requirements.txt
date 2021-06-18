@@ -1,7 +1,7 @@
 # Replacement for the local package installs from CodeArtifact
 alembic==1.4.2
 amqp==2.6.1
-apache-airflow==1.10.12
+apache-airflow==1.10.15
 apispec==1.3.3
 argcomplete==1.12.0
 attrs==19.3.0

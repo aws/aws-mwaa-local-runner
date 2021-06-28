@@ -4,7 +4,8 @@ TRY_LOOP="20"
 
 # Global defaults
 : "${AIRFLOW_HOME:="/usr/local/airflow"}"
-: "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
+#Generate fernet key and store in airflow.cfg below on line 27
+#: "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
 : "${AIRFLOW__CORE__EXECUTOR:=${EXECUTOR:-Sequential}Executor}"
 
 # Load DAGs examples (default: Yes)
@@ -15,8 +16,21 @@ fi
 export \
   AIRFLOW_HOME \
   AIRFLOW__CORE__EXECUTOR \
-  AIRFLOW__CORE__FERNET_KEY \
+  #Use airflow.cfg rather than env var
+  #AIRFLOW__CORE__FERNET_KEY \
   AIRFLOW__CORE__LOAD_EXAMPLES \
+
+#Add fernet key to airflow.cfg file:
+
+if grep -q '$FERNET_KEY' /usr/local/airflow/airflow.cfg; then
+    echo "fernet_key not set in airflow.cfg!"
+    sed -i 's/$FERNET_KEY/TEMP_KEY/' /usr/local/airflow/airflow.cfg
+    : "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY_GEN:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
+    sed -i "s/TEMP_KEY/$AIRFLOW__CORE__FERNET_KEY/" /usr/local/airflow/airflow.cfg
+    echo "fernet_key is now set in airflow.cfg"
+  else
+    echo "fernet_key is already set in airflow.cfg"
+fi
 
 # Install custom python package if requirements.txt is present
 install_requirements() {
@@ -76,6 +90,7 @@ case "$1" in
       sleep 2
     fi
     airflow create_user -r Admin -u admin -e admin@example.com -f admin -l user -p test
+    touch /usr/local/airflow/line83gotexecuted.txt
     exec airflow webserver
     ;;
   resetdb)

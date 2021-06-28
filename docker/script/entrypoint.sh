@@ -90,7 +90,6 @@ case "$1" in
       sleep 2
     fi
     airflow create_user -r Admin -u admin -e admin@example.com -f admin -l user -p test
-    touch /usr/local/airflow/line83gotexecuted.txt
     exec airflow webserver
     ;;
   resetdb)

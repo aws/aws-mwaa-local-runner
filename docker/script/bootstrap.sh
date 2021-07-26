@@ -29,6 +29,15 @@ adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 # install watchtower for Cloudwatch logging
 pip3 install $PIP_OPTION watchtower==1.0.1
 
+pip3 install $PIP_OPTION apache-airflow-providers-tableau==1.0.0
+pip3 install $PIP_OPTION apache-airflow-providers-databricks==1.0.1
+pip3 install $PIP_OPTION apache-airflow-providers-ssh==1.3.0
+pip3 install $PIP_OPTION apache-airflow-providers-postgres==1.0.2
+pip3 install $PIP_OPTION apache-airflow-providers-docker==1.2.0
+pip3 install $PIP_OPTION apache-airflow-providers-oracle==1.1.0
+pip3 install $PIP_OPTION apache-airflow-providers-presto==1.0.2
+pip3 install $PIP_OPTION apache-airflow-providers-sftp==1.2.0
+
 # Install default providers
 pip3 install --constraint /constraints.txt apache-airflow-providers-amazon
 

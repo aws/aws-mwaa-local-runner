@@ -70,7 +70,7 @@ case "$1" in
   local-runner)
     install_requirements
     airflow db init
-    [[ -f "$AIRFLOW_HOME/dags/.variables.json" ]] && airflow variables import "$AIRFLOW_HOME/dags/.variables.json"
+    [[ -f "$AIRFLOW_HOME/.variables.json" ]] && airflow variables import "$AIRFLOW_HOME/.variables.json"
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.
       airflow scheduler &
@@ -83,7 +83,7 @@ case "$1" in
     airflow db reset -y
     sleep 2
     airflow db init
-    [[ -f "$AIRFLOW_HOME/dags/.variables.json" ]] && airflow variables import "$AIRFLOW_HOME/dags/.variables.json"
+    [[ -f "$AIRFLOW_HOME/.variables.json" ]] && airflow variables import "$AIRFLOW_HOME/.variables.json"
     ;;
   test-requirements)
     install_requirements

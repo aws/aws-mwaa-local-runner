@@ -4,3 +4,4 @@ dags/**/*.pyc
 /.idea
 /logs
 /db-data
+*.iml

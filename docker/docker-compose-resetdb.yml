@@ -1,4 +1,6 @@
 version: '3.7'
+volumes:
+    postgres_data: {}
 services:
     postgres:
         image: postgres:10-alpine
@@ -11,10 +13,10 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - "${PWD}/db-data:/var/lib/postgresql/data"
+            - "postgres_data:/var/lib/postgresql/data"
 
     resetdb:
-        image: amazon/mwaa-local:2.0
+        image: amazon/mwaa-local:2.0.2
         depends_on:
             - postgres
         environment:

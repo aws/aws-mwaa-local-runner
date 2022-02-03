@@ -17,6 +17,9 @@ pip3 install $PIP_OPTION celery[sqs]
 # install postgres python client
 pip3 install $PIP_OPTION psycopg2
 
+# setuptools dropped support for use_2to3 in v58+ and psycopg2 will install the latest v59+ version
+pip3 install $PIP_OPTION "setuptools<=57.*"
+
 # install minimal Airflow packages
 pip3 install $PIP_OPTION --constraint /constraints.txt apache-airflow[crypto,celery,statsd"${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}"]=="${AIRFLOW_VERSION}"
 

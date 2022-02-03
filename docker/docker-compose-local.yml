@@ -15,6 +15,11 @@ services:
 
     local-runner:
         image: amazon/mwaa-local:2.0.2
+        deploy:
+          resources:
+            limits:
+              cpus: '2'
+              memory: 4048M
         restart: always
         depends_on:
             - postgres

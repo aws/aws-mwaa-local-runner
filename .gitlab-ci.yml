@@ -1,0 +1,56 @@
+image: docker:19.03.5
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+services:
+  - name: docker:19.03.5-dind
+    command:
+      - "--registry-mirror"
+      - "https://mirror.gitlab.homegate.ch"
+      - "--storage-driver"
+      - "overlay2"
+
+.test_tags:
+  tags:
+    - hg-shared-test
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^mwaa-.*-smg/'
+
+.run_in_release_branch: &run_in_release_branch
+  if: '$CI_COMMIT_BRANCH =~ /^mwaa-.*-smg/'
+    #  changes:
+    # - docker/**/*
+    #- VERSION
+  when: on_success
+
+.do_not_run_otherwise: &do_not_run_otherwise
+  when: never
+
+.build:
+  extends: .test_tags
+  stage: test
+  before_script:
+    - docker login -u gitlab-ci-token -p ${CI_JOB_TOKEN} ${CI_REGISTRY}
+    - AIRFLOW_VERSION=$(cat ./VERSION)
+    - DOCKER_IMAGE_NAME=${CI_REGISTRY}/homegate/projects/data-team/mwaa-local-runner
+  script:
+    - docker build --rm --compress -t ${DOCKER_IMAGE_NAME} ./docker
+
+build_and_deploy:
+  extends: .build
+  stage: deploy
+  rules:
+    - *run_in_release_branch
+    - *do_not_run_otherwise
+  script:
+    - !reference [.build, script]
+    - UTC_DATETIME=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
+    - docker tag ${DOCKER_IMAGE_NAME} ${DOCKER_IMAGE_NAME}:${AIRFLOW_VERSION}
+    - docker tag ${DOCKER_IMAGE_NAME} ${DOCKER_IMAGE_NAME}:${UTC_DATETIME}
+    - docker tag ${DOCKER_IMAGE_NAME} ${DOCKER_IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
+    - docker push ${DOCKER_IMAGE_NAME}
+

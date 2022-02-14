@@ -7,7 +7,7 @@ FROM public.ecr.aws/amazonlinux/amazonlinux
 LABEL maintainer="amazon"
 
 # Airflow
-ARG AIRFLOW_VERSION=2.0.2
+ARG AIRFLOW_VERSION=2.2.2
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""

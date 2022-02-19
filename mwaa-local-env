@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AIRFLOW_VERSION=2.0.2
+AIRFLOW_VERSION=2.2.2
 
 display_help() {
    # Display Help

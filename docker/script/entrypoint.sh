@@ -69,6 +69,10 @@ fi
 case "$1" in
   local-runner)
     install_requirements
+    # Forward ports for App Domain. 192.168.5.2 is the host system IP. This should be host.lima.internal, but that DNS
+    # entry is currently broken. The IP should be static however.
+    socat TCP4-LISTEN:31337,fork,reuseaddr TCP4:192.168.5.2:31337 &
+    socat TCP4-LISTEN:31338,fork,reuseaddr TCP4:192.168.5.2:31338 &
     airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.

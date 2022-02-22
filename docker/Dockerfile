@@ -7,7 +7,12 @@ FROM amazonlinux
 LABEL maintainer="amazon"
 
 # Airflow
-ARG AIRFLOW_VERSION=2.0.2
+## Version specific ARGs
+ARG AIRFLOW_VERSION=2.2.2
+ARG WATCHTOWER_VERSION=1.0.6
+ARG PROVIDER_AMAZON_VERSION=2.4.0
+
+## General ARGs
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
 ARG AIRFLOW_DEPS=""
 ARG PYTHON_DEPS=""
@@ -19,6 +24,7 @@ COPY script/bootstrap.sh /bootstrap.sh
 COPY script/systemlibs.sh /systemlibs.sh
 COPY config/constraints.txt /constraints.txt
 COPY config/requirements.txt /requirements.txt
+COPY config/mwaa-base-providers-requirements.txt /mwaa-base-providers-requirements.txt
 
 RUN chmod u+x /systemlibs.sh && /systemlibs.sh
 RUN chmod u+x /bootstrap.sh && /bootstrap.sh

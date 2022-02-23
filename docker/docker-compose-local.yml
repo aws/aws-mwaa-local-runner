@@ -30,6 +30,7 @@ services:
         volumes:
             - ${PWD}/dags:/usr/local/airflow/dags
             - ${PWD}/plugins:/usr/local/airflow/plugins
+            - ~/.aws:/usr/local/airflow/.aws # Include AWS config to interact with AWS APIs
         ports:
             - "8080:8080"
         command: local-runner

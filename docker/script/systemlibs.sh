@@ -29,6 +29,9 @@ yum install -y nc
 # Needed for generating fernet key for local runner
 yum install -y python2-cryptography
 
+# Needed to forward App Domain related ports: 31337, 31338
+RUN yum -y install socat
+
 # Install additional system library dependencies. Provided as a string of libraries separated by space
 if [ -n "${SYSTEM_DEPS}" ]; then yum install -y "${SYSTEM_DEPS}"; fi
 

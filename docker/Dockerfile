@@ -3,7 +3,8 @@
 # DESCRIPTION: Amazon MWAA Local Dev Environment
 # BUILD: docker build --rm -t amazon/mwaa-local .
 
-FROM public.ecr.aws/amazonlinux/amazonlinux
+ARG PLATFORM=linux/amd64
+FROM --platform=${PLATFORM} public.ecr.aws/amazonlinux/amazonlinux
 LABEL maintainer="amazon"
 
 # Airflow

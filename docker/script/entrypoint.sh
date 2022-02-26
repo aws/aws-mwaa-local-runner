@@ -23,7 +23,7 @@ install_requirements() {
     # Install custom python package if requirements.txt is present
     if [[ -e "$AIRFLOW_HOME/dags/requirements.txt" ]]; then
         echo "Installing requirements.txt"
-        pip3 install --user -r "$AIRFLOW_HOME/dags/requirements.txt"
+        pip3 install --user -r "$AIRFLOW_HOME/dags/requirements.txt" --force-reinstall
     fi
 }
 

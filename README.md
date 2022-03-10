@@ -132,6 +132,15 @@ virtual_python_plugin.py
 
 **Note**: this step assumes you have a DAG that corresponds to the custom plugin. For examples, see [MWAA Code Examples](https://docs.aws.amazon.com/mwaa/latest/userguide/sample-code.html).
 
+### Validating Airflow upgrade from 1.10 to 2.0
+
+You can use the "upgrade check" script - [apache-airflow-upgrade-check](https://pypi.org/project/apache-airflow-upgrade-check/) - to identify breaking changes as you plan migrating from 1.10.12 to 2.0. Run the command below.
+
+```bash
+./mwaa-local-env upgrade-check
+```
+
+
 ## What's next?
 
 - Learn how to upload the requirements.txt file to your Amazon S3 bucket in [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html).

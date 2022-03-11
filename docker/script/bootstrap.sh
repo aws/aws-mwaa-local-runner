@@ -22,6 +22,9 @@ adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 # install watchtower for Cloudwatch logging
 pip3 install $PIP_OPTION watchtower==1.0.1
 
+# install upgrade check script
+pip3 install apache-airflow-upgrade-check==1.4.0
+
 # Use symbolic link to ensure Airflow 2.0's backport packages are in the same namespace as Airflow itself
 # see https://airflow.apache.org/docs/apache-airflow/stable/backport-providers.html#troubleshooting-installing-backport-packages
 ln -s /usr/local/airflow/.local/lib/python3.7/site-packages/airflow/providers /usr/local/lib/python3.7/site-packages/airflow/providers

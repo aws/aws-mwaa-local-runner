@@ -132,6 +132,67 @@ virtual_python_plugin.py
 
 **Note**: this step assumes you have a DAG that corresponds to the custom plugin. For examples, see [MWAA Code Examples](https://docs.aws.amazon.com/mwaa/latest/userguide/sample-code.html).
 
+### Validating Airflow upgrade from 1.10 to 2.0
+
+You can use the "upgrade check" script - [apache-airflow-upgrade-check](https://pypi.org/project/apache-airflow-upgrade-check/) - to identify breaking changes as you plan migrating from 1.10.12 to 2.0. Copy your dags and plugins to the appropriate directories and run the command below.
+
+```bash
+./mwaa-local-env upgrade-check
+```
+
+As an example the v1.10.12 [Amazon EMR job DAG](https://github.com/aws-samples/amazon-mwaa-examples/blob/main/dags/emr_job/1.10/emr_job.py) from the MWAA samples repository will generate the results bellow.
+
+```bash
+================================================================================================== STATUS ==================================================================================================
+
+Check for latest versions of apache-airflow and checker...........................................................................................................................................SUCCESS
+Remove airflow.AirflowMacroPlugin class...........................................................................................................................................................SUCCESS
+Ensure users are not using custom metaclasses in custom operators.................................................................................................................................SUCCESS
+Chain between DAG and operator not allowed........................................................................................................................................................SUCCESS
+Connection.conn_type is not nullable..............................................................................................................................................................SUCCESS
+Custom Executors now require full path............................................................................................................................................................SUCCESS
+Check versions of PostgreSQL, MySQL, and SQLite to ease upgrade to Airflow 2.0....................................................................................................................SUCCESS
+Hooks that run DB functions must inherit from DBApiHook...........................................................................................................................................SUCCESS
+Fernet is enabled by default......................................................................................................................................................................SUCCESS
+GCP service account key deprecation...............................................................................................................................................................SUCCESS
+Unify hostname_callable option in core section....................................................................................................................................................SUCCESS
+Changes in import paths of hooks, operators, sensors and others...................................................................................................................................FAIL
+Legacy UI is deprecated by default................................................................................................................................................................SUCCESS
+Logging configuration has been moved to new section...............................................................................................................................................FAIL
+Removal of Mesos Executor.........................................................................................................................................................................SUCCESS
+No additional argument allowed in BaseOperator....................................................................................................................................................SUCCESS
+/usr/local/lib/python3.7/site-packages/airflow/configuration.py:436: DeprecationWarning: The max_threads option in [scheduler] has been renamed to parsing_processes - the old setting has been used, but please update your config.
+  self.get(section, option, fallback=_UNSET)
+Rename max_threads to parsing_processes...........................................................................................................................................................SUCCESS
+Users must set a kubernetes.pod_template_file value...............................................................................................................................................SKIPPED
+Ensure Users Properly Import conf from Airflow....................................................................................................................................................SUCCESS
+SendGrid email uses old airflow.contrib module....................................................................................................................................................SUCCESS
+Check Spark JDBC Operator default connection name.................................................................................................................................................SUCCESS
+Changes in import path of remote task handlers....................................................................................................................................................SUCCESS
+Connection.conn_id is not unique..................................................................................................................................................................SUCCESS
+Use CustomSQLAInterface instead of SQLAInterface for custom data models...........................................................................................................................SUCCESS
+Found 7 problems.
+```
+
+The recommendation section details how exactly to address the failures.
+
+```bash
+============================================================================================= RECOMMENDATIONS ==============================================================================================
+
+Changes in import paths of hooks, operators, sensors and others
+---------------------------------------------------------------
+Many hooks, operators and other classes has been renamed and moved. Those changes were part of unifying names and imports paths as described in AIP-21.
+The `contrib` folder has been replaced by `providers` directory and packages:
+https://github.com/apache/airflow#backport-packages
+
+Problems:
+
+  1.  Please install `apache-airflow-backport-providers-amazon`
+  2.  Using `airflow.contrib.operators.emr_add_steps_operator.EmrAddStepsOperator` should be replaced by `airflow.providers.amazon.aws.operators.emr_add_steps.EmrAddStepsOperator`. Affected file: /usr/local/airflow/dags/emr_job.py
+  3.  Using `airflow.contrib.operators.emr_create_job_flow_operator.EmrCreateJobFlowOperator` should be replaced by `airflow.providers.amazon.aws.operators.emr_create_job_flow.EmrCreateJobFlowOperator`. Affected file: /usr/local/airflow/dags/emr_job.py
+  4.  Using `airflow.contrib.sensors.emr_step_sensor.EmrStepSensor` should be replaced by `airflow.providers.amazon.aws.sensors.emr_step.EmrStepSensor`. Affected file: /usr/local/airflow/dags/emr_job.py
+```
+
 ## What's next?
 
 - Learn how to upload the requirements.txt file to your Amazon S3 bucket in [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html).

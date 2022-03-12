@@ -2,6 +2,9 @@
 
 set -e
 
+# Upgrade pip version to latest
+python3 -m pip install --upgrade pip
+
 # On RHL and Centos based linux, openssl needs to be set as Python Curl SSL library
 export PYCURL_SSL_LIBRARY=openssl
 pip3 install $PIP_OPTION --compile pycurl

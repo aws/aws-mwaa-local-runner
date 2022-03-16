@@ -65,7 +65,7 @@ test-requirements)
      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
      build_image
    fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
+   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
    ;;
 build-image)
    build_image

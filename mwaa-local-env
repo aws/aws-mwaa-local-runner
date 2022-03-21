@@ -1,6 +1,7 @@
 #!/bin/bash
 
 AIRFLOW_VERSION=2.2
+DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
 
 display_help() {
    # Display Help
@@ -71,10 +72,10 @@ build-image)
    build_image
    ;;
 reset-db)
-   docker-compose -f ./docker/docker-compose-resetdb.yml up
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up
    ;;
 start)
-   docker-compose -f ./docker/docker-compose-local.yml up
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
    ;;
 help)
    display_help

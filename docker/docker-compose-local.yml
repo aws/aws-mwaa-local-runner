@@ -21,6 +21,10 @@ services:
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
+            - AWS_DEFAULT_REGION=us-west-2
+            - AWS_REGION=us-west-2
+            - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+            - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
         logging:
             options:
                 max-size: 10m

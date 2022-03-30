@@ -30,7 +30,7 @@ if [ -n "${PYTHON_DEPS}" ]; then pip3 install $PIP_OPTION "${PYTHON_DEPS}"; fi
 adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 
 # install watchtower for Cloudwatch logging
-pip3 install $PIP_OPTION watchtower==1.0.1
+pip3 install $PIP_OPTION watchtower==${WATCHTOWER_VERSION}
 
 pip3 install $PIP_OPTION apache-airflow-providers-tableau==1.0.0
 pip3 install $PIP_OPTION apache-airflow-providers-databricks==1.0.1
@@ -42,7 +42,15 @@ pip3 install $PIP_OPTION apache-airflow-providers-presto==1.0.2
 pip3 install $PIP_OPTION apache-airflow-providers-sftp==1.2.0
 
 # Install default providers
-pip3 install --constraint /constraints.txt apache-airflow-providers-amazon
+pip3 install $PIP_OPTION apache-airflow-providers-amazon==${PROVIDER_AMAZON_VERSION}
+
+MWAA_BASE_PROVIDERS_FILE=/mwaa-base-providers-requirements.txt
+if [[ -f "$MWAA_BASE_PROVIDERS_FILE" ]]; then
+    echo "Installing providers supported for airflow version ${PROVIDER_AMAZON_VERSION}"
+    pip3 install $PIP_OPTION -r $MWAA_BASE_PROVIDERS_FILE
+else
+    echo "Providers not supported for airflow version ${PROVIDER_AMAZON_VERSION}"
+fi
 
 # Use symbolic link to ensure Airflow 2.0's backport packages are in the same namespace as Airflow itself
 # see https://airflow.apache.org/docs/apache-airflow/stable/backport-providers.html#troubleshooting-installing-backport-packages

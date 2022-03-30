@@ -10,24 +10,34 @@ The CLI builds a Docker container image locally that’s similar to a MWAA produ
 
 ```text
 dags/
+  example_dag_with_custom_ssh_plugin.py
+  example_dag_with_taskflow_api.py
   requirements.txt
   tutorial.py
 docker/
-  .gitignore
-  mwaa-local-env
-  README.md
   config/
     airflow.cfg
     constraints.txt
+    mwaa-base-providers-requirements.txt
     requirements.txt
     webserver_config.py
   script/
     bootstrap.sh
     entrypoint.sh
-  docker-compose-dbonly.yml
+    systemlibs.sh
   docker-compose-local.yml
+  docker-compose-resetdb.yml
   docker-compose-sequential.yml
   Dockerfile
+plugins/
+  ssh_plugin.py
+.gitignore
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+mwaa-local-env
+README.md
+VERSION
 ```
 
 ## Prerequisites
@@ -115,17 +125,11 @@ Successfully installed aws-batch-0.6 awscli-1.19.21 botocore-1.20.21 docutils-0.
 
 #### Custom plugins
 
-- Create a directory at the root of this repository, and change directories into it. This should be at the same level as `dags/` and `docker`. For example:
+- There is a directory at the root of this repository called plugins. It contains a sample plugin ```ssh_plugin.py```
+- In this directory, create a file for your new custom plugin. For example:
 
 ```bash
-mkdir plugins
-cd plugins
-```
-
-- Create a file for your custom plugin. For example:
-
-```bash
-virtual_python_plugin.py
+ssh_plugin.py
 ```
 
 - (Optional) Add any Python dependencies to `dags/requirements.txt`.

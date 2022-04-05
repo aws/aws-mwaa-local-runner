@@ -24,6 +24,8 @@ docker/
   script/
     bootstrap.sh
     entrypoint.sh
+    systemlibs.sh
+    generate_key.sh
   docker-compose-dbonly.yml
   docker-compose-local.yml
   docker-compose-sequential.yml
@@ -159,13 +161,20 @@ To learn more, see [Amazon MWAA Execution Role](https://docs.aws.amazon.com/mwaa
 
 The following section contains errors you may encounter when using the Docker container image in this repository.
 
-## My environment is not starting - process failed with dag_stats_table already exists
+### My environment is not starting - process failed with dag_stats_table already exists
 
 - If you encountered [the following error](https://issues.apache.org/jira/browse/AIRFLOW-3678): `process fails with "dag_stats_table already exists"`, you'll need to reset your database using the following command:
 
 ```bash
 ./mwaa-local-env reset-db
 ```
+
+### Fernet Key InvalidToken
+
+A Fernet Key is generated during image build (`./mwaa-local-env build-image`) and is durable throughout all
+containers started from that image. This key is used to [encrypt connection passwords in the Airflow DB](https://airflow.apache.org/docs/apache-airflow/stable/security/secrets/fernet.html).
+If changes are made to the image and it is rebuilt, you may get a new key that will not match the key used when
+the Airflow DB was initialized, in this case you will need to reset the DB (`./mwaa-local-env reset-db`).
 
 ## Security
 

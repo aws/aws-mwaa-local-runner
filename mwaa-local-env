@@ -17,6 +17,7 @@ display_help() {
    echo "start                  Start Airflow local environment. (LocalExecutor, Using postgres DB)"
    echo "test-requirements      Install requirements on an ephemeral instance of the container."
    echo "validate-prereqs       Validate pre-reqs installed (docker, docker-compose, python3, pip3)"
+   echo "start-celery           Start Airflow environment in 3 Containers with Celery Executor"
    echo
 }
 
@@ -76,6 +77,9 @@ reset-db)
    ;;
 start)
    docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
+   ;;
+start-celery)
+   docker compose -f ./docker/docker-compose-multi.yml up
    ;;
 help)
    display_help

@@ -78,6 +78,26 @@ case "$1" in
     airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
     exec airflow webserver
     ;;
+  # Adding functionality to run in 3 Containers here to more align with MWAA environment
+  local-webserver)
+    install_requirements
+    airflow db init
+    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
+    exec airflow webserver
+    ;;
+
+  local-scheduler)
+    install_requirements
+    airflow scheduler
+    ;;
+
+  local-worker)
+    install_requirements
+    AIRFLOW__CELERY__RESULT_BACKEND="db+postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}${POSTGRES_EXTRAS}"
+    export AIRFLOW__CELERY__RESULT_BACKEND
+    airflow celery worker
+    ;;
+
   resetdb)
     airflow db reset -y
     sleep 2

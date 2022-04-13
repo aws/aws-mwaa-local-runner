@@ -1,0 +1,79 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:10-alpine
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - "${PWD}/db-data:/var/lib/postgresql/data"
+
+  redis:
+    image: redis:5.0-alpine
+
+  local-webserver:
+    image: amazon/mwaa-local:2.0
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Celery
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - ${PWD}/dags:/usr/local/airflow/dags
+      - ${PWD}/plugins:/usr/local/airflow/plugins
+      - ${PWD}/logs:/usr/local/airflow/logs
+    ports:
+      - "8080:8080"
+    command: local-webserver
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  local-scheduler:
+    image: amazon/mwaa-local:2.0
+    restart: always
+    depends_on:
+      - local-webserver
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Celery
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - ${PWD}/dags:/usr/local/airflow/dags
+      - ${PWD}/plugins:/usr/local/airflow/plugins
+      - ${PWD}/logs:/usr/local/airflow/logs
+    command: local-scheduler
+
+  local-worker:
+    image: amazon/mwaa-local:2.0
+    restart: always
+    depends_on:
+      - local-scheduler
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Celery
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - ${PWD}/dags:/usr/local/airflow/dags
+      - ${PWD}/plugins:/usr/local/airflow/plugins
+      - ${PWD}/logs:/usr/local/airflow/logs
+    command: local-worker

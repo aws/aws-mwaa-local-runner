@@ -35,7 +35,7 @@ package_requirements() {
         echo "Packaging requirements.txt into plugins"
         pip3 download --no-deps -r "$AIRFLOW_HOME/dags/requirements.txt" -d "$AIRFLOW_HOME/plugins"
         cd "$AIRFLOW_HOME/plugins"
-        ls -rt -d -1 "$PWD"/{*,*} > "$AIRFLOW_HOME/dags/packaged_requirements.txt" 
+        ls -rt -d -1 "$PWD"/* > "$AIRFLOW_HOME/dags/packaged_requirements.txt" 
     fi
 }
 

@@ -4,7 +4,7 @@ TRY_LOOP="20"
 
 # Global defaults
 : "${AIRFLOW_HOME:="/usr/local/airflow"}"
-: "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(cat /usr/local/etc/airflow_fernet_key)}}"
+: "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(python -c "from cryptography.fernet import Fernet; FERNET_KEY = Fernet.generate_key().decode(); print(FERNET_KEY)")}}"
 : "${AIRFLOW__CORE__EXECUTOR:=${EXECUTOR:-Sequential}Executor}"
 
 # Load DAGs examples (default: Yes)
@@ -24,6 +24,18 @@ install_requirements() {
     if [[ -e "$AIRFLOW_HOME/dags/requirements.txt" ]]; then
         echo "Installing requirements.txt"
         pip3 install --user -r "$AIRFLOW_HOME/dags/requirements.txt"
+    fi
+}
+
+# Download custom python WHL files and package as ZIP if requirements.txt is present
+package_requirements() {
+    # Download custom python WHL files and package as ZIP if requirements.txt is present
+    if [[ -e "$AIRFLOW_HOME/dags/requirements.txt" ]]; then
+        
+        echo "Packaging requirements.txt into plugins"
+        pip3 download --no-deps -r "$AIRFLOW_HOME/dags/requirements.txt" -d "$AIRFLOW_HOME/plugins"
+        cd "$AIRFLOW_HOME/plugins"
+        ls -rt -d -1 "$PWD"/{*,*} > "$AIRFLOW_HOME/dags/packaged_requirements.txt" 
     fi
 }
 
@@ -86,6 +98,9 @@ case "$1" in
   test-requirements)
     install_requirements
     ;;
+  package-requirements)
+    package_requirements
+    ;;    
   *)
     # The command is something like bash, not an airflow subcommand. Just run it in the right environment.
     exec "$@"

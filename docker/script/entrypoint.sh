@@ -34,8 +34,9 @@ package_requirements() {
         echo "Packaging requirements.txt into plugins"
         pip3 download -r "$AIRFLOW_HOME/dags/requirements.txt" -d "$AIRFLOW_HOME/plugins"
         cd "$AIRFLOW_HOME/plugins"
-        printf '%s\n%s\n' "--no-index" "$(cat $AIRFLOW_HOME/dags/requirements.txt)" > "$AIRFLOW_HOME/dags/requirements.txt"
-        printf '%s\n%s\n' "--find-links /usr/local/airflow/plugins" "$(cat $AIRFLOW_HOME/dags/requirements.txt)" > "$AIRFLOW_HOME/dags/requirements.txt"
+        zip "$AIRFLOW_HOME/dags/plugins.zip" *
+        printf '%s\n%s\n' "--no-index" "$(cat $AIRFLOW_HOME/dags/requirements.txt)" > "$AIRFLOW_HOME/dags/packaged_requirements.txt"
+        printf '%s\n%s\n' "--find-links /usr/local/airflow/plugins" "$(cat $AIRFLOW_HOME/dags/packaged_requirements.txt)" > "$AIRFLOW_HOME/dags/packaged_requirements.txt"
     fi
 }
 

@@ -27,6 +27,19 @@ install_requirements() {
     fi
 }
 
+# Download custom python WHL files and package as ZIP if requirements.txt is present
+package_requirements() {
+    # Download custom python WHL files and package as ZIP if requirements.txt is present
+    if [[ -e "$AIRFLOW_HOME/dags/requirements.txt" ]]; then
+        echo "Packaging requirements.txt into plugins"
+        pip3 download -r "$AIRFLOW_HOME/dags/requirements.txt" -d "$AIRFLOW_HOME/plugins"
+        cd "$AIRFLOW_HOME/plugins"
+        zip "$AIRFLOW_HOME/dags/plugins.zip" *
+        printf '%s\n%s\n' "--no-index" "$(cat $AIRFLOW_HOME/dags/requirements.txt)" > "$AIRFLOW_HOME/dags/packaged_requirements.txt"
+        printf '%s\n%s\n' "--find-links /usr/local/airflow/plugins" "$(cat $AIRFLOW_HOME/dags/packaged_requirements.txt)" > "$AIRFLOW_HOME/dags/packaged_requirements.txt"
+    fi
+}
+
 wait_for_port() {
   local name="$1" host="$2" port="$3"
   local j=0
@@ -86,6 +99,9 @@ case "$1" in
   test-requirements)
     install_requirements
     ;;
+  package-requirements)
+    package_requirements
+    ;;    
   *)
     # The command is something like bash, not an airflow subcommand. Just run it in the right environment.
     exec "$@"

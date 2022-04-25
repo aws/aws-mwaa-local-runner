@@ -4,3 +4,6 @@ dags/**/*.pyc
 /.idea
 /logs
 /db-data
+/plugins/__pycache__
+.DS_Store
+/docker/.DS_Store

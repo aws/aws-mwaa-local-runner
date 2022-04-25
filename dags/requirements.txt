@@ -1,4 +1,5 @@
-apache-airflow-providers-snowflake==1.3.0
+--constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.2.2/constraints-3.7.txt"
+apache-airflow-providers-snowflake
+apache-airflow-providers-ssh
 apache-airflow-providers-amazon
-psycopg2-binary==2.8.6
-aws-batch
+

@@ -25,11 +25,13 @@ if [ -n "${PYTHON_DEPS}" ]; then pip3 install $PIP_OPTION "${PYTHON_DEPS}"; fi
 # install adduser and add the airflow user
 adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 
-# install watchtower for Cloudwatch logging
-pip3 install $PIP_OPTION watchtower==${WATCHTOWER_VERSION}
-
 # Install default providers
 pip3 install $PIP_OPTION apache-airflow-providers-amazon==${PROVIDER_AMAZON_VERSION}
+
+# Install watchtower for Cloudwatch logging
+# This has to come after installing apache-airflow-providers-amazon to avoid the
+# latter overwriting the version with a previous version.
+pip3 install $PIP_OPTION watchtower==${WATCHTOWER_VERSION}
 
 MWAA_BASE_PROVIDERS_FILE=/mwaa-base-providers-requirements.txt
 if [[ -f "$MWAA_BASE_PROVIDERS_FILE" ]]; then

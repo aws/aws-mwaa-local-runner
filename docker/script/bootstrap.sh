@@ -26,11 +26,13 @@ if [ -n "${PYTHON_DEPS}" ]; then pip3 install $PIP_OPTION "${PYTHON_DEPS}"; fi
 # install adduser and add the airflow user
 adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 
-# install watchtower for Cloudwatch logging
-pip3 install $PIP_OPTION watchtower==1.0.1
-
 # Install default providers
 pip3 install --constraint /constraints.txt apache-airflow-providers-amazon
+
+# install watchtower for Cloudwatch logging
+# This has to come after installing apache-airflow-providers-amazon to avoid the
+# latter overwriting the version with a previous version.
+pip3 install $PIP_OPTION watchtower==2.0.1
 
 # Use symbolic link to ensure Airflow 2.0's backport packages are in the same namespace as Airflow itself
 # see https://airflow.apache.org/docs/apache-airflow/stable/backport-providers.html#troubleshooting-installing-backport-packages

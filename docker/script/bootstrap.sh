@@ -40,9 +40,13 @@ pip3 install $PIP_OPTION apache-airflow-providers-docker==1.2.0
 pip3 install $PIP_OPTION apache-airflow-providers-oracle==1.1.0
 pip3 install $PIP_OPTION apache-airflow-providers-presto==1.0.2
 pip3 install $PIP_OPTION apache-airflow-providers-sftp==1.2.0
+pip3 install $PIP_OPTION apache-airflow-providers-cncf-kubernetes==4.0.1
 
 # Install default providers
 pip3 install --constraint /constraints.txt apache-airflow-providers-amazon
+
+# AWS CLI for shell testing
+pip3 install $PIP_OPTION awscli
 
 # Use symbolic link to ensure Airflow 2.0's backport packages are in the same namespace as Airflow itself
 # see https://airflow.apache.org/docs/apache-airflow/stable/backport-providers.html#troubleshooting-installing-backport-packages

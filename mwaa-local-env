@@ -52,8 +52,6 @@ validate_prereqs() {
 
 build_image() {
    docker buildx build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker --platform=linux/amd64
-   # From our setup
-   # docker buildx build -t recentive-airflow-etl --platform=linux/amd64 . --load
 }
 
 case "$1" in

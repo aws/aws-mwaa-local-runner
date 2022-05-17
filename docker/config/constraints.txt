@@ -156,7 +156,7 @@ cached-property==1.5.2
 cachetools==4.2.1
 cassandra-driver==3.20.2
 cattrs==1.5.0
-celery==4.4.7
+celery==5.2.2
 certifi==2020.12.5
 cffi==1.14.5
 cfgv==3.2.0

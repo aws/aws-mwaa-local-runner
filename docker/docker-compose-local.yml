@@ -21,7 +21,8 @@ services:
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
-            - DAP_ENV=local
+            - DAP_ENV
+            - DAP_IMAGE_NAME
         logging:
             options:
                 max-size: 10m

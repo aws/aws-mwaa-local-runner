@@ -20,6 +20,8 @@ services:
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
+            - DAP_ENV
+            - DAP_IMAGE
         logging:
             options:
                 max-size: 10m
@@ -27,6 +29,7 @@ services:
         volumes:
             - ${PWD}/dags:/usr/local/airflow/dags
             - ${PWD}/plugins:/usr/local/airflow/plugins
+            - ${HOME}/.aws:/usr/local/airflow/.aws:ro
         ports:
             - "8080:8080"
         command: resetdb

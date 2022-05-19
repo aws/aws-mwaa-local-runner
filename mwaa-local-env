@@ -1,7 +1,8 @@
 #!/bin/bash
 
 AIRFLOW_VERSION=2.0.2
-DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
+# Edit the airflow version name since docker compose project name breaks when periods are used as of v2.5.1
+DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$(echo "$AIRFLOW_VERSION" | sed -r 's/[.]+/_/g')
 
 display_help() {
    # Display Help

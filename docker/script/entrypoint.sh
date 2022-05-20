@@ -67,6 +67,7 @@ fi
 
 
 case "$1" in
+  # TODO This should be smarter about installing and initializing the DB to speed boot up time
   local-runner)
     install_requirements
     airflow db init
@@ -75,7 +76,8 @@ case "$1" in
       airflow scheduler &
       sleep 2
     fi
-    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
+    # Removing this since webserver is configured to grant everyone Admin access for local development
+    # airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
     exec airflow webserver
     ;;
   resetdb)

@@ -35,3 +35,6 @@ WTF_CSRF_ENABLED = False
 
 # The authentication type
 AUTH_TYPE = AUTH_DB
+
+# Grant admin access to all users
+AUTH_ROLE_PUBLIC = 'Admin'

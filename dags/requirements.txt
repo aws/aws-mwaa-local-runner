@@ -1,0 +1,1 @@
+apache-airflow[amazon]==2.2.2

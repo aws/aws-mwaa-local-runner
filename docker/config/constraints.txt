@@ -1,5 +1,5 @@
 # downloaded from https://raw.githubusercontent.com/apache/airflow/constraints-2-0/constraints-3.7.txt
-# Editable install with no version control (apache-airflow==2.0.2)
+# Editable install with no version control (apache-airflow==2.2.2)
 APScheduler==3.6.3
 Authlib==0.15.3
 Babel==2.9.0

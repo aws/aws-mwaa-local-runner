@@ -1,7 +1,7 @@
 version: '3.7'
 services:
     webserver:
-        image: amazon/mwaa-local:2.0.2
+        image: amazon/mwaa-local:2.2.2
         restart: always
         environment:
             - LOAD_EX=n
@@ -17,7 +17,11 @@ services:
             - "8080:8080"
         command: webserver
         healthcheck:
-            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            test:
+                [
+                    "CMD-SHELL",
+                    "[ -f /usr/local/airflow/airflow-webserver.pid ]"
+                ]
             interval: 30s
             timeout: 30s
             retries: 3

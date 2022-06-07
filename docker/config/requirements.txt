@@ -46,7 +46,7 @@ Flask-SQLAlchemy==2.5.1
 Flask-WTF==0.14.3
 flower==0.9.7
 graphviz==0.16
-gunicorn==19.10.0
+gunicorn>=20.1.0
 humanize==3.4.1
 idna==2.10
 importlib-metadata==1.7.0

@@ -1,42 +1,42 @@
 version: '3.7'
 services:
-    postgres:
-        image: postgres:10-alpine
-        environment:
-            - POSTGRES_USER=airflow
-            - POSTGRES_PASSWORD=airflow
-            - POSTGRES_DB=airflow
-        logging:
-            options:
-                max-size: 10m
-                max-file: "3"
-        volumes:
-            - "${PWD}/db-data:/var/lib/postgresql/data"
+  postgres:
+    image: postgres:10-alpine
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - "${PWD}/db-data:/var/lib/postgresql/data"
 
-    local-runner:
-        image: amazon/mwaa-local:2.2.2
-        restart: always
-        depends_on:
-            - postgres
-        environment:
-            - LOAD_EX=n
-            - EXECUTOR=Local
-        logging:
-            options:
-                max-size: 10m
-                max-file: "3"
-        volumes:
-            - ${PWD}/dags:/usr/local/airflow/dags
-            - ${PWD}/plugins:/usr/local/airflow/plugins
-        ports:
-            - "8080:8080"
-        command: local-runner
-        healthcheck:
-            test:
-                [
-                    "CMD-SHELL",
-                    "[ -f /usr/local/airflow/airflow-webserver.pid ]"
-                ]
-            interval: 30s
-            timeout: 30s
-            retries: 3
+  local-runner:
+    image: amazon/mwaa-local:2.2.2
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Local
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - ${PWD}/../dags:/usr/local/airflow/dags
+      - ${PWD}/plugins:/usr/local/airflow/plugins
+    ports:
+      - "8080:8080"
+    command: local-runner
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "[ -f /usr/local/airflow/airflow-webserver.pid ]"
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 3

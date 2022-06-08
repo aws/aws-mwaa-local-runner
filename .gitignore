@@ -4,3 +4,13 @@ dags/**/*.pyc
 /.idea
 /logs
 /db-data
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

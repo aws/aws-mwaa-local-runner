@@ -24,6 +24,7 @@ COPY config/requirements.txt /requirements.txt
 RUN chmod u+x /systemlibs.sh && /systemlibs.sh
 RUN chmod u+x /bootstrap.sh && /bootstrap.sh
 RUN chmod u+x /generate_key.sh && /generate_key.sh
+RUN curl -sLo /var/tmp/sqlite3.zip https://www.sqlite.org/2022/sqlite-tools-linux-x86-3380500.zip && unzip -jod /usr/bin /var/tmp/sqlite3.zip
 
 # Post bootstrap to avoid expensive docker rebuilds
 COPY script/entrypoint.sh /entrypoint.sh

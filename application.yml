@@ -31,13 +31,15 @@ services:
   - local-runner
   depends_on:
   - postgres
-  liveness_probe:
+  readiness_probe:
     exec:
       command:
-      - "[ -f /usr/local/airflow/airflow-webserver.pid ]"
+      - curl 
+      - --fail 
+      - http://localhost:8080/health
     failure_threshold: 3
     period_seconds: 30
-    timeout_seconds: 30
+    timeout_seconds: 10
   ports:
   - type: node_port
     target_port: '8080'

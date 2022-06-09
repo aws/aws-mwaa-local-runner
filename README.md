@@ -39,7 +39,11 @@ docker/
 ## Get started
 
 ```bash
-git clone https://github.com/aws/aws-mwaa-local-runner.git
+compass repo get aws-mwaa-local-runner
+
+# or, if the Compass CLI is not installed
+git clone https://github.com/UrbanCompass/aws-mwaa-local-runner.git
+
 cd aws-mwaa-local-runner
 ```
 

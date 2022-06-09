@@ -1,0 +1,57 @@
+## Release Hub Application Configuration
+---
+app: ChipperAirflowDev
+auto_deploy: true
+context: chippercash-release-staging
+domain: release.chipper.cash
+repo_name: chippercash/aws-mwaa-local-runner
+hostnames:
+- airflow: airflow-${env_id}.${domain}
+resources:
+  cpu:
+    limits: 1000m
+    requests: 100m
+  memory:
+    limits: 1Gi
+    requests: 100Mi
+  replicas: 1
+services:
+- name: postgres
+  image: postgres:10-alpine
+  ports:
+  - type: container_port
+    port: '5432'
+- name: airflow
+  image: chippercash/aws-mwaa-local-runner/airflow
+  has_repo: true
+  build:
+    context: docker
+    dockerfile: Dockerfile
+  args:
+  - local-runner
+  depends_on:
+  - postgres
+  liveness_probe:
+    exec:
+      command:
+      - "[ -f /usr/local/airflow/airflow-webserver.pid ]"
+    failure_threshold: 3
+    period_seconds: 30
+    timeout_seconds: 30
+  ports:
+  - type: node_port
+    target_port: '8080'
+    port: '8080'
+workflows:
+- name: setup
+  order_from:
+  - services.all
+- name: teardown
+  parallelize:
+  - step: remove_environment
+    tasks:
+    - release.remove_environment
+- name: patch
+  order_from:
+  - services.all
+tracking_branch: main

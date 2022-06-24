@@ -51,7 +51,7 @@ validate_prereqs() {
 }
 
 build_image() {
-   docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
+   docker build --rm --compress --platform="linux/amd64" -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
 }
 
 case "$1" in
@@ -61,10 +61,10 @@ validate-prereqs)
 test-requirements)
    BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
    if [[ -n "$BUILT_IMAGE" ]]; then
-     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION exists. Skipping build"
+      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION exists. Skipping build"
    else
-     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
-     build_image
+      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
+      build_image
    fi
    docker run -v $(pwd)/dags:/usr/local/airflow/dags -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
    ;;

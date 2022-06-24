@@ -67,7 +67,7 @@ test-requirements)
       echo "Container $CONTAINER_NAME not built. Building locally."
       build_image
    fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -it $CONTAINER_NAME test-requirements
+   docker run -v $(pwd)/dags:/usr/local/airflow/dags --platform="linux/amd64" -it $CONTAINER_NAME test-requirements
    ;;
 build-image)
    build_image

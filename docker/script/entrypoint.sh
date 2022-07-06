@@ -75,7 +75,7 @@ case "$1" in
       airflow scheduler &
       sleep 2
     fi
-    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
+#    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
     exec airflow webserver
     ;;
   resetdb)

@@ -81,6 +81,27 @@ fi
 
 case "$1" in
   local-runner)
+    # if S3_PLUGINS_PATH
+    if [ -n "$S3_PLUGINS_PATH" ]; then
+      echo "Downloading $S3_PLUGINS_PATH"
+      mkdir -p /usr/local/airflow/plugins
+      cd /usr/local/airflow/plugins
+      aws s3 cp $S3_PLUGINS_PATH plugins.zip
+      unzip -o plugins.zip 
+      rm plugins.zip
+    fi
+    # if S3_DAGS_PATH
+    if [ -n "$S3_DAGS_PATH" ]; then
+      echo "Syncing $S3_DAGS_PATH"   
+      mkdir -p /usr/local/airflow/dags
+      cd /usr/local/airflow/dags
+      aws s3 sync --exact-timestamp $S3_DAGS_PATH .
+    fi    
+    # if S3_REQUIREMENTS_PATH
+    if [ -n "$S3_REQUIREMENTS_PATH" ]; then
+      echo "Downloading $S3_REQUIREMENTS_PATH"
+      aws s3 cp $S3_REQUIREMENTS_PATH /usr/local/airflow/dags/requirements.txt
+    fi        
     install_requirements
     airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
@@ -88,7 +109,7 @@ case "$1" in
       airflow scheduler &
       sleep 2
     fi
-    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
+    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p $DEFAULT_PASSWORD
     exec airflow webserver
     ;;
   resetdb)
@@ -97,9 +118,19 @@ case "$1" in
     airflow db init
     ;;
   test-requirements)
+    # if S3_REQUIREMENTS_PATH
+    if [ -n "$S3_REQUIREMENTS_PATH" ]; then
+      echo "Downloading $S3_REQUIREMENTS_PATH"
+      aws s3 cp $S3_REQUIREMENTS_PATH /usr/local/airflow/dags/requirements.txt
+    fi      
     install_requirements
     ;;
   package-requirements)
+    # if S3_REQUIREMENTS_PATH
+    if [ -n "$S3_REQUIREMENTS_PATH" ]; then
+      echo "Downloading $S3_REQUIREMENTS_PATH"
+      aws s3 cp $S3_REQUIREMENTS_PATH /usr/local/airflow/dags/requirements.txt
+    fi      
     package_requirements
     ;;    
   *)

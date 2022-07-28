@@ -13,6 +13,7 @@ services:
         volumes:
             - ${PWD}/dags:/usr/local/airflow/dags
             - ${PWD}/plugins:/usr/local/airflow/plugins
+            - ${PWD}/requirements:/usr/local/airflow/requirements
         ports:
             - "8080:8080"
         command: webserver

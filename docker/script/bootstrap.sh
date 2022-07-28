@@ -3,7 +3,7 @@
 set -e
 
 # Upgrade pip version to latest
-python3 -m pip install --upgrade pip
+pip3 install --upgrade pip
 
 # Install wheel to avoid legacy setup.py install
 pip3 install wheel

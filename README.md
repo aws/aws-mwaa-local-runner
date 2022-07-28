@@ -21,6 +21,7 @@ docker/
     mwaa-base-providers-requirements.txt
     requirements.txt
     webserver_config.py
+    .env.localrunner
   script/
     bootstrap.sh
     entrypoint.sh
@@ -151,6 +152,7 @@ The following section contains common questions and answers you may encounter wh
 
 - You can setup the local Airflow's boto with the intended execution role to test your DAGs with AWS operators before uploading to your Amazon S3 bucket. To setup aws connection for Airflow locally see [Airflow | AWS Connection](https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/connections/aws.html)
 To learn more, see [Amazon MWAA Execution Role](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-create-role.html).
+- You can set AWS credentials via environment variables set in the `docker/config/.env.localrunner` env file. To learn more about AWS environment variables, see [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) and [Using temporary security credentials with the AWS CLI](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html#using-temp-creds-sdk-cli). Simply set the relevant environment variables in `.env.localrunner` and `./mwaa-local-env start`.
 
 ### How do I add libraries to requirements.txt and test install?
 

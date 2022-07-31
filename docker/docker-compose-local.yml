@@ -21,6 +21,7 @@ services:
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
+            - AIRFLOW_CONN_RATES_DB=postgres://cgrgzozk:ev_TbSxcdG-l2Ka0uFYXiBvL9tgXyPHo@kandula.db.elephantsql.com/cgrgzozk
         logging:
             options:
                 max-size: 10m
@@ -28,6 +29,7 @@ services:
         volumes:
             - ${PWD}/dags:/usr/local/airflow/dags
             - ${PWD}/plugins:/usr/local/airflow/plugins
+            - ${PWD}/data:/usr/local/airflow/data
         ports:
             - "8080:8080"
         command: local-runner
@@ -36,3 +38,4 @@ services:
             interval: 30s
             timeout: 30s
             retries: 3
+

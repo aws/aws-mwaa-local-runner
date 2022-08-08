@@ -23,7 +23,7 @@ services:
             - DAP_ENV
             - DAP_IMAGE
             - AWS_PROFILE
-t             - DBT_SNOWFLAKE_ACCOUNT
+            - DBT_SNOWFLAKE_ACCOUNT
             - DBT_SNOWFLAKE_DATABASE
             - DBT_SNOWFLAKE_PASSWORD
             - DBT_SNOWFLAKE_USER

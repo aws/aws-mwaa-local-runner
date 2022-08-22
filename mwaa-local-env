@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AIRFLOW_VERSION=2.2
+AIRFLOW_VERSION=2_2
 DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
 
 display_help() {
@@ -52,7 +52,7 @@ validate_prereqs() {
 }
 
 build_image() {
-   docker build --rm --compress -t amazon/mwaa-local:2.2 ./docker
+   docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
 }
 
 case "$1" in

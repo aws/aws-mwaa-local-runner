@@ -1,7 +1,7 @@
 version: '3.7'
 services:
     webserver:
-        image: amazon/mwaa-local:2.0
+        image: amazon/mwaa-local:2_2
         restart: always
         environment:
             - LOAD_EX=n
@@ -13,6 +13,7 @@ services:
         volumes:
             - ${PWD}/dags:/usr/local/airflow/dags
             - ${PWD}/plugins:/usr/local/airflow/plugins
+            - ${PWD}/requirements:/usr/local/airflow/requirements
         ports:
             - "8080:8080"
         command: webserver

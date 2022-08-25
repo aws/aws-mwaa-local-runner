@@ -1,6 +1,7 @@
 #!/bin/bash
 
-AIRFLOW_VERSION=2.0.2
+AIRFLOW_VERSION=2_2
+DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
 
 display_help() {
    # Display Help
@@ -15,6 +16,7 @@ display_help() {
    echo "reset-db               Reset local PostgresDB container."
    echo "start                  Start Airflow local environment. (LocalExecutor, Using postgres DB)"
    echo "test-requirements      Install requirements on an ephemeral instance of the container."
+   echo "package-requirements   Download requirements WHL files into plugins folder."
    echo "validate-prereqs       Validate pre-reqs installed (docker, docker-compose, python3, pip3)"
    echo
 }
@@ -65,16 +67,26 @@ test-requirements)
      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
      build_image
    fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
+   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
    ;;
+package-requirements)
+   BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
+   if [[ -n "$BUILT_IMAGE" ]]; then
+     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION exists. Skipping build"
+   else
+     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
+     build_image
+   fi
+   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
+   ;;   
 build-image)
    build_image
    ;;
 reset-db)
-   docker-compose -f ./docker/docker-compose-resetdb.yml up
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up --abort-on-container-exit
    ;;
 start)
-   docker-compose -f ./docker/docker-compose-local.yml up
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
    ;;
 help)
    display_help

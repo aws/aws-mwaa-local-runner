@@ -14,7 +14,7 @@ services:
             - "${PWD}/db-data:/var/lib/postgresql/data"
 
     local-runner:
-        image: amazon/mwaa-local:2.0.2
+        image: amazon/mwaa-local:2_2
         deploy:
           resources:
             limits:
@@ -33,6 +33,7 @@ services:
         volumes:
             - ${PWD}/dags:/usr/local/airflow/dags
             - ${PWD}/plugins:/usr/local/airflow/plugins
+            - ${PWD}/requirements:/usr/local/airflow/requirements
             - ${HOME}/.aws:/usr/local/airflow/.aws
         ports:
             - "8080:8080"
@@ -42,3 +43,5 @@ services:
             interval: 30s
             timeout: 30s
             retries: 3
+        env_file:
+            - ./config/.env.localrunner

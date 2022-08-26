@@ -1,2 +1,0 @@
-apache-airflow[ssh]==2.2.2
-apache-airflow-providers-pagerduty==2.1.0

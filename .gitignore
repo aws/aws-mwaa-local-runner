@@ -4,3 +4,4 @@
 /logs
 /db-data
 dags/*
+requirements/*

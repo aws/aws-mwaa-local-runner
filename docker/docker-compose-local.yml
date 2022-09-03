@@ -23,6 +23,7 @@ services:
             - EXECUTOR=Local
             - DAP_ENV
             - DAP_IMAGE
+            - SCRAPER_IMAGE
             - AWS_PROFILE
             - DBT_SNOWFLAKE_ACCOUNT
             - DBT_SNOWFLAKE_DATABASE

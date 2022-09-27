@@ -21,7 +21,7 @@ boto3==1.18.65
 botocore==1.21.65
 cached-property==1.5.2
 cattrs==1.5.0
-celery==5.2.0
+celery==5.2.2
 certifi==2020.12.5
 cffi==1.15.0
 charset-normalizer==2.0.7

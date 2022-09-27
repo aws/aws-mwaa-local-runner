@@ -2,6 +2,7 @@ version: '3.7'
 services:
     webserver:
         image: amazon/mwaa-local:2_2
+        platform: "linux/amd64"
         restart: always
         environment:
             - LOAD_EX=n
@@ -11,9 +12,9 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - ${PWD}/dags:/usr/local/airflow/dags
-            - ${PWD}/plugins:/usr/local/airflow/plugins
-            - ${PWD}/requirements:/usr/local/airflow/requirements
+            - "${PWD}/dags:/usr/local/airflow/dags"
+            - "${PWD}/plugins:/usr/local/airflow/plugins"
+            - "${PWD}/requirements:/usr/local/airflow/requirements"
         ports:
             - "8080:8080"
         command: webserver

@@ -219,7 +219,7 @@ fissix==21.6.6
 flake8-colors==0.1.9
 flake8==4.0.1
 flaky==3.7.0
-flower==1.0.0
+flower==1.2.0
 freezegun==1.1.0
 frozenlist==1.2.0
 fsspec==2021.11.0

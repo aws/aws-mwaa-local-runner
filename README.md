@@ -70,8 +70,6 @@ Build the Docker container image using the following command:
 
 ### Step two: Running Apache Airflow
 
-Run Apache Airflow using one of the following database backends.
-
 #### Local runner
 
 Runs a local Apache Airflow environment that is a close representation of MWAA by configuration.

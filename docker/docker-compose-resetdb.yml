@@ -15,6 +15,7 @@ services:
 
     resetdb:
         image: amazon/mwaa-local:2_2
+        platform: "linux/amd64"
         depends_on:
             - postgres
         environment:
@@ -25,9 +26,9 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - ${PWD}/dags:/usr/local/airflow/dags
-            - ${PWD}/plugins:/usr/local/airflow/plugins
-            - ${PWD}/requirements:/usr/local/airflow/requirements
+            - "${PWD}/dags:/usr/local/airflow/dags"
+            - "${PWD}/plugins:/usr/local/airflow/plugins"
+            - "${PWD}/requirements:/usr/local/airflow/requirements"
         ports:
             - "8080:8080"
         command: resetdb

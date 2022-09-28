@@ -15,8 +15,9 @@ The CLI builds a Docker container image locally that’s similar to a MWAA produ
 dags/
   example_dag_with_custom_ssh_plugin.py
   example_dag_with_taskflow_api.py
-  requirements.txt
   tutorial.py
+requirements/  
+  requirements.txt
 docker/
   config/
     airflow.cfg

@@ -1,0 +1,4 @@
+--constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.0.2/constraints-3.7.txt"
+
+mysqlclient==2.0.3
+pymysql==1.0.2

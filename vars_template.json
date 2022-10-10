@@ -1,0 +1,13 @@
+{
+    "rds_database": "asimov",
+    "rds_host": "rds-replica.ohm.team",
+    "rds_port": 3306,
+    "rds_password": "",
+    "rds_username": "",
+    "redshift_database": "asimov",
+    "redshift_host": "redshift.ohm.team",
+    "redshift_password": "",
+    "redshift_port": 5439,
+    "redshift_username": "",
+    "s3_bucket_name": "ohm-airflow"
+}

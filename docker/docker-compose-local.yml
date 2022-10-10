@@ -15,7 +15,7 @@ services:
 
     local-runner:
         image: amazon/mwaa-local:2_2
-        platform: "linux/amd64"
+        platform: "linux/arm64/v8"
         restart: always
         depends_on:
             - postgres
@@ -30,6 +30,7 @@ services:
             - "${PWD}/dags:/usr/local/airflow/dags"
             - "${PWD}/plugins:/usr/local/airflow/plugins"
             - "${PWD}/requirements:/usr/local/airflow/requirements"
+            - "${HOME}/.aws/:/usr/local/airflow/.aws:ro"
         ports:
             - "8080:8080"
         command: local-runner

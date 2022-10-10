@@ -47,8 +47,10 @@ ln -s /usr/local/airflow/.local/lib/python3.7/site-packages/airflow/providers /u
 
 # install awscli v2, according to https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html#cliv2-linux-install
 zip_file="awscliv2.zip"
+# install_url="https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+install_url="https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"
 cd /tmp
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o $zip_file
+curl "$install_url" -o $zip_file
 unzip $zip_file
 ./aws/install
 rm $zip_file

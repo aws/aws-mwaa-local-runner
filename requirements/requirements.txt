@@ -1,2 +1,4 @@
 apache-airflow[ssh]==2.2.2
 apache-airflow-providers-pagerduty==2.1.0
+mysqlclient==2.0.3
+pymysql==1.0.2

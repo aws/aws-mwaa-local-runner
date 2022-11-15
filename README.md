@@ -103,14 +103,14 @@ The following section describes where to add your DAG code and supporting files.
 
 #### Requirements.txt
 
-1. Add Python dependencies to `dags/requirements.txt`.  
+1. Add Python dependencies to `requirements/requirements.txt`.  
 2. To test a requirements.txt without running Apache Airflow, use the following script:
 
 ```bash
 ./mwaa-local-env test-requirements
 ```
 
-Let's say you add `aws-batch==0.6` to your `dags/requirements.txt` file. You should see an output similar to:
+Let's say you add `aws-batch==0.6` to your `requirements/requirements.txt` file. You should see an output similar to:
 
 ```bash
 Installing requirements.txt
@@ -158,7 +158,7 @@ To learn more, see [Amazon MWAA Execution Role](https://docs.aws.amazon.com/mwaa
 
 ### How do I add libraries to requirements.txt and test install?
 
-- A `requirements.txt` file is included in the `/dags` folder of your local Docker container image. We recommend adding libraries to this file, and running locally.
+- A `requirements.txt` file is included in the `/requirements` folder of your local Docker container image. We recommend adding libraries to this file, and running locally.
 
 ### What if a library is not available on PyPi.org?
 

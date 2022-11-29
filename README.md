@@ -2,6 +2,9 @@
 
 This repository provides a command line interface (CLI) utility that replicates an Amazon Managed Workflows for Apache Airflow (MWAA) environment locally.
 
+*Please note: MWAA/AWS/DAG/Plugin issues should be raised through AWS Support or the Airflow Slack #airflow-aws channel.  Issues here should be focused on this local-runner repository.*
+
+
 ## About the CLI
 
 The CLI builds a Docker container image locally that’s similar to a MWAA production image. This allows you to run a local Apache Airflow environment to develop and test DAGs, custom plugins, and dependencies before deploying to MWAA.
@@ -10,26 +13,37 @@ The CLI builds a Docker container image locally that’s similar to a MWAA produ
 
 ```text
 dags/
-  requirements.txt
+  example_dag_with_custom_ssh_plugin.py
+  example_dag_with_taskflow_api.py
   tutorial.py
+requirements/  
+  requirements.txt
 docker/
-  .gitignore
-  mwaa-local-env
-  README.md
   config/
     airflow.cfg
     constraints.txt
+    mwaa-base-providers-requirements.txt
     requirements.txt
     webserver_config.py
+    .env.localrunner
   script/
     bootstrap.sh
     entrypoint.sh
     systemlibs.sh
     generate_key.sh
-  docker-compose-dbonly.yml
   docker-compose-local.yml
+  docker-compose-resetdb.yml
   docker-compose-sequential.yml
   Dockerfile
+plugins/
+  ssh_plugin.py
+.gitignore
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENSE
+mwaa-local-env
+README.md
+VERSION
 ```
 
 ## Prerequisites
@@ -56,8 +70,6 @@ Build the Docker container image using the following command:
 **Note**: it takes several minutes to build the Docker image locally.
 
 ### Step two: Running Apache Airflow
-
-Run Apache Airflow using one of the following database backends.
 
 #### Local runner
 
@@ -91,14 +103,14 @@ The following section describes where to add your DAG code and supporting files.
 
 #### Requirements.txt
 
-1. Add Python dependencies to `dags/requirements.txt`.  
+1. Add Python dependencies to `requirements/requirements.txt`.  
 2. To test a requirements.txt without running Apache Airflow, use the following script:
 
 ```bash
 ./mwaa-local-env test-requirements
 ```
 
-Let's say you add `aws-batch==0.6` to your `dags/requirements.txt` file. You should see an output similar to:
+Let's say you add `aws-batch==0.6` to your `requirements/requirements.txt` file. You should see an output similar to:
 
 ```bash
 Installing requirements.txt
@@ -117,20 +129,14 @@ Successfully installed aws-batch-0.6 awscli-1.19.21 botocore-1.20.21 docutils-0.
 
 #### Custom plugins
 
-- Create a directory at the root of this repository, and change directories into it. This should be at the same level as `dags/` and `docker`. For example:
+- There is a directory at the root of this repository called plugins. It contains a sample plugin ```ssh_plugin.py```
+- In this directory, create a file for your new custom plugin. For example:
 
 ```bash
-mkdir plugins
-cd plugins
+ssh_plugin.py
 ```
 
-- Create a file for your custom plugin. For example:
-
-```bash
-virtual_python_plugin.py
-```
-
-- (Optional) Add any Python dependencies to `dags/requirements.txt`.
+- (Optional) Add any Python dependencies to `requirements/requirements.txt`.
 
 **Note**: this step assumes you have a DAG that corresponds to the custom plugin. For examples, see [MWAA Code Examples](https://docs.aws.amazon.com/mwaa/latest/userguide/sample-code.html).
 
@@ -148,10 +154,11 @@ The following section contains common questions and answers you may encounter wh
 
 - You can setup the local Airflow's boto with the intended execution role to test your DAGs with AWS operators before uploading to your Amazon S3 bucket. To setup aws connection for Airflow locally see [Airflow | AWS Connection](https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/connections/aws.html)
 To learn more, see [Amazon MWAA Execution Role](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-create-role.html).
+- You can set AWS credentials via environment variables set in the `docker/config/.env.localrunner` env file. To learn more about AWS environment variables, see [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html) and [Using temporary security credentials with the AWS CLI](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html#using-temp-creds-sdk-cli). Simply set the relevant environment variables in `.env.localrunner` and `./mwaa-local-env start`.
 
 ### How do I add libraries to requirements.txt and test install?
 
-- A `requirements.txt` file is included in the `/dags` folder of your local Docker container image. We recommend adding libraries to this file, and running locally.
+- A `requirements.txt` file is included in the `/requirements` folder of your local Docker container image. We recommend adding libraries to this file, and running locally.
 
 ### What if a library is not available on PyPi.org?
 

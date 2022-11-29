@@ -6,6 +6,7 @@ TRY_LOOP="20"
 : "${AIRFLOW_HOME:="/usr/local/airflow"}"
 : "${AIRFLOW__CORE__FERNET_KEY:=${FERNET_KEY:=$(cat /usr/local/etc/airflow_fernet_key)}}"
 : "${AIRFLOW__CORE__EXECUTOR:=${EXECUTOR:-Sequential}Executor}"
+: "${REQUIREMENTS_FILE:="requirements/requirements.txt"}"
 
 # Load DAGs examples (default: Yes)
 if [[ -z "$AIRFLOW__CORE__LOAD_EXAMPLES" && "${LOAD_EX:=n}" == n ]]; then
@@ -21,9 +22,22 @@ export \
 # Install custom python package if requirements.txt is present
 install_requirements() {
     # Install custom python package if requirements.txt is present
-    if [[ -e "$AIRFLOW_HOME/dags/requirements.txt" ]]; then
+    if [[ -e "$AIRFLOW_HOME/$REQUIREMENTS_FILE" ]]; then
         echo "Installing requirements.txt"
-        pip3 install --user -r "$AIRFLOW_HOME/dags/requirements.txt"
+        pip3 install --user -r "$AIRFLOW_HOME/$REQUIREMENTS_FILE"
+    fi
+}
+
+# Download custom python WHL files and package as ZIP if requirements.txt is present
+package_requirements() {
+    # Download custom python WHL files and package as ZIP if requirements.txt is present
+    if [[ -e "$AIRFLOW_HOME/$REQUIREMENTS_FILE" ]]; then
+        echo "Packaging requirements.txt into plugins"
+        pip3 download -r "$AIRFLOW_HOME/$REQUIREMENTS_FILE" -d "$AIRFLOW_HOME/plugins"
+        cd "$AIRFLOW_HOME/plugins"
+        zip "$AIRFLOW_HOME/requirements/plugins.zip" *
+        printf '%s\n%s\n' "--no-index" "$(cat $AIRFLOW_HOME/$REQUIREMENTS_FILE)" > "$AIRFLOW_HOME/requirements/packaged_requirements.txt"
+        printf '%s\n%s\n' "--find-links /usr/local/airflow/plugins" "$(cat $AIRFLOW_HOME/requirements/packaged_requirements.txt)" > "$AIRFLOW_HOME/requirements/packaged_requirements.txt"
     fi
 }
 
@@ -68,6 +82,28 @@ fi
 
 case "$1" in
   local-runner)
+    # if S3_PLUGINS_PATH
+    if [ -n "$S3_PLUGINS_PATH" ]; then
+      echo "Downloading $S3_PLUGINS_PATH"
+      mkdir -p $AIRFLOW_HOME/plugins
+      cd $AIRFLOW_HOME/plugins
+      aws s3 cp $S3_PLUGINS_PATH plugins.zip
+      unzip -o plugins.zip 
+      rm plugins.zip
+    fi
+    # if S3_DAGS_PATH
+    if [ -n "$S3_DAGS_PATH" ]; then
+      echo "Syncing $S3_DAGS_PATH"   
+      mkdir -p $AIRFLOW_HOME/dags
+      cd $AIRFLOW_HOME/dags
+      aws s3 sync --exact-timestamp --delete $S3_DAGS_PATH .
+    fi    
+    # if S3_REQUIREMENTS_PATH
+    if [ -n "$S3_REQUIREMENTS_PATH" ]; then
+      echo "Downloading $S3_REQUIREMENTS_PATH"
+      mkdir -p $AIRFLOW_HOME/requirements
+      aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
+    fi        
     install_requirements
     airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
@@ -75,7 +111,7 @@ case "$1" in
       airflow scheduler &
       sleep 2
     fi
-    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p test
+    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p $DEFAULT_PASSWORD
     exec airflow webserver
     ;;
   resetdb)
@@ -84,8 +120,23 @@ case "$1" in
     airflow db init
     ;;
   test-requirements)
+    # if S3_REQUIREMENTS_PATH
+    if [ -n "$S3_REQUIREMENTS_PATH" ]; then
+      echo "Downloading $S3_REQUIREMENTS_PATH"
+      mkdir -p $AIRFLOW_HOME/requirements
+      aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
+    fi      
     install_requirements
     ;;
+  package-requirements)
+    # if S3_REQUIREMENTS_PATH
+    if [ -n "$S3_REQUIREMENTS_PATH" ]; then
+      echo "Downloading $S3_REQUIREMENTS_PATH"
+      mkdir -p $AIRFLOW_HOME/requirements
+      aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
+    fi      
+    package_requirements
+    ;;    
   *)
     # The command is something like bash, not an airflow subcommand. Just run it in the right environment.
     exec "$@"

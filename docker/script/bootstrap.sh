@@ -18,6 +18,14 @@ sudo -u airflow pip3 install $PIP_OPTION --upgrade pip
 # openjdk is required for JDBC to work with Airflow
 yum install -y java-1.8.0-openjdk
 
+REQUIREMENTS_FILE=/requirements.txt
+if [[ -f "$REQUIREMENTS_FILE" ]]; then
+    echo "Installing packages in requirements.txt"
+    pip3 install $PIP_OPTION -r $REQUIREMENTS_FILE
+else
+    echo "No requirements.txt file available"
+fi
+
 # install minimal Airflow packages
 echo "Installing minimal Airflow packages"
 sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt apache-airflow[crypto,celery,statsd"${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}"]=="${AIRFLOW_VERSION}"

@@ -19,6 +19,7 @@ ARG PYTHON_DEPS=""
 ARG SYSTEM_DEPS=""
 ARG INDEX_URL=""
 ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
+ENV PATH="/usr/local/airflow/.local/bin:/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/airflow/.local/lib/python3.7/site-packages:/usr/local/airflow/.local/bin:/usr/local/airflow/.local/lib/python3.7/site-packages:/usr/local/airflow/.local/bin:/usr/local/airflow/.local/lib/python3.7/site-packages"
 
 COPY script/bootstrap.sh /bootstrap.sh
 COPY script/systemlibs.sh /systemlibs.sh

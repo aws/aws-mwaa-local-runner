@@ -22,9 +22,7 @@ from os import getenv
 from airflow import DAG
 from airflow.providers.amazon.aws.operators.aws_lambda import AwsLambdaInvokeFunctionOperator
 
-# [START howto_operator_lambda_env_variables]
 LAMBDA_FUNCTION_NAME = getenv("LAMBDA_FUNCTION_NAME", "test-function")
-# [END howto_operator_lambda_env_variables]
 
 SAMPLE_EVENT = json.dumps({"SampleEvent": {"SampleData": {"Name": "XYZ", "DoB": "1993-01-01"}}})
 

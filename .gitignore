@@ -1,6 +1,6 @@
 /git
 *.workspace
-dags/**/*.pyc
+*.pyc
 /.idea
 /logs
 /db-data

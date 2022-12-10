@@ -25,9 +25,9 @@ services:
         max-size: 10m
         max-file: "3"
     volumes:
-      - ${PWD}/../dags:/usr/local/pipelines-airflow/dags
+      - ${PWD}/../dags:/usr/local/airflow/dags
       - ${PWD}/plugins:/usr/local/airflow/plugins
-      - ${PWD}/requirements/requirements.txt:/usr/local/pipelines-airflow/dags/requirements.txt
+      - ${PWD}/../dags/requirements.txt:/usr/local/airflow/dags/requirements.txt
 
     ports:
       - "8080:8080"

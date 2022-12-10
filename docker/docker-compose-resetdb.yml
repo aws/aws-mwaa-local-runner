@@ -27,7 +27,7 @@ services:
     volumes:
       - ${PWD}/../dags:/usr/local/airflow/dags
       - ${PWD}/plugins:/usr/local/airflow/plugins
-      - ${PWD}/../dags/requirements.txt:/usr/local/airflow/dags/requirements.txt
+      - ${PWD}/requirements/requirements.txt:/usr/local/airflow/dags/requirements.txt
 
     ports:
       - "8080:8080"

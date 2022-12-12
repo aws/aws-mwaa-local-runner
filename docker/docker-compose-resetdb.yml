@@ -28,7 +28,6 @@ services:
       - "${PWD}/../dags:/usr/local/airflow/dags"
       - "${PWD}/plugins:/usr/local/airflow/plugins"
       - "${PWD}/requirements:/usr/local/airflow/requirements"
-      - "$HOME/.aws/credentials:/usr/local/airflow/.aws/credentials"
 
     ports:
       - "8080:8080"

@@ -23,6 +23,13 @@ export \
 install_requirements() {
     # Install custom python package if requirements.txt is present
     if [[ -e "$AIRFLOW_HOME/$REQUIREMENTS_FILE" ]]; then
+      if ! grep -- "-c " "$AIRFLOW_HOME/$REQUIREMENTS_FILE"
+      then
+          if ! grep -- "--constraint " "$AIRFLOW_HOME/$REQUIREMENTS_FILE"
+          then
+              echo "WARNING: Constraints should be specified for requirements.txt. Please see https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html#working-dags-dependencies-test-create"
+          fi
+      fi    
         echo "Installing requirements.txt"
         pip3 install --user -r "$AIRFLOW_HOME/$REQUIREMENTS_FILE"
     fi

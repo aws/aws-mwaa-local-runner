@@ -1,5 +1,5 @@
-# VERSION 1.10
-# AUTHOR: Subash Canapathy
+# VERSION 2.2
+# AUTHOR: John Jackson
 # DESCRIPTION: Amazon MWAA Local Dev Environment
 # BUILD: docker build --rm -t amazon/mwaa-local .
 
@@ -19,6 +19,7 @@ ARG PYTHON_DEPS=""
 ARG SYSTEM_DEPS=""
 ARG INDEX_URL=""
 ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
+ENV PATH="$PATH:/usr/local/airflow/.local/bin:/root/.local/bin:/usr/local/airflow/.local/lib/python3.7/site-packages"
 
 COPY script/bootstrap.sh /bootstrap.sh
 COPY script/systemlibs.sh /systemlibs.sh

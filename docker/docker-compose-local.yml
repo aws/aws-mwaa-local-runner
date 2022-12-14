@@ -13,9 +13,18 @@ services:
         volumes:
             - "${PWD}/db-data:/var/lib/postgresql/data"
 
+    docker-in-docker:
+        image: bobrik/socat
+        platform: "linux/amd64"
+        restart: always
+        command: "TCP-LISTEN:2375,fork UNIX-CONNECT:/var/run/docker.sock"
+        privileged: true
+        volumes:
+            -  /var/run/docker.sock:/var/run/docker.sock
+
     local-runner:
         image: amazon/mwaa-local:2_2
-        platform: "linux/amd64"
+        platform: "linux/arm64/v8"
         restart: always
         depends_on:
             - postgres

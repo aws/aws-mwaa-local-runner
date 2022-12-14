@@ -15,6 +15,7 @@ display_help() {
    echo "build-image            Build Image Locally"
    echo "reset-db               Reset local PostgresDB container."
    echo "start                  Start Airflow local environment. (LocalExecutor, Using postgres DB)"
+   echo "stop                   Stop Airflow local environment. (LocalExecutor, Using postgres DB)"
    echo "test-requirements      Install requirements on an ephemeral instance of the container."
    echo "package-requirements   Download requirements WHL files into plugins folder."
    echo "validate-prereqs       Validate pre-reqs installed (docker, docker-compose, python3, pip3)"
@@ -86,7 +87,10 @@ reset-db)
    docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up --abort-on-container-exit
    ;;
 start)
-   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up -d
+   ;;
+stop)
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml down
    ;;
 help)
    display_help

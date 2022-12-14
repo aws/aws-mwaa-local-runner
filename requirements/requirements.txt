@@ -1,3 +1,5 @@
 --constraint "/usr/local/airflow/dags/constraints-3.7-amazon-6.0.txt"
 
 apache-airflow-providers-amazon==6.0.0
+apache-airflow-providers-docker==2.3.0
+airflow_multi_dagrun==2.2.0

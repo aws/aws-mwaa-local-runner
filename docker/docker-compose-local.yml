@@ -36,9 +36,9 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - "${PWD}/dags:/usr/local/airflow/dags"
+            - "${dag_path:-$PWD/dags}:/usr/local/airflow/dags"
             - "${PWD}/plugins:/usr/local/airflow/plugins"
-            - "${PWD}/requirements:/usr/local/airflow/requirements"
+            - "${requiremnets_path:-$PWD/requirements}:/usr/local/airflow/requirements"
         ports:
             - "8080:8080"
         command: local-runner

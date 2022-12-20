@@ -48,6 +48,7 @@ RUN /bin/bash fix_sqlite.sh
 EXPOSE 8080 5555 8793
 
 USER airflow
+ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 WORKDIR ${AIRFLOW_USER_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["local-runner"]

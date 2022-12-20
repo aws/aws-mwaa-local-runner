@@ -9,6 +9,8 @@ This repository provides a command line interface (CLI) utility that replicates 
 
 The CLI builds a Docker container image locally that’s similar to a MWAA production image. This allows you to run a local Apache Airflow environment to develop and test DAGs, custom plugins, and dependencies before deploying to MWAA.
 
+
+
 ## What this repo contains
 
 ```text
@@ -80,6 +82,18 @@ Runs a local Apache Airflow environment that is a close representation of MWAA b
 ```
 
 To stop the local environment, Ctrl+C on the terminal and wait till the local runner and the postgres containers are stopped.
+
+
+### To run for another DAG
+```bash
+
+./mwaa-local-env start -p <absolute_path_to_dag_folder> -r <absolute_path_to_requirements_folder>
+```
+where:
+- -p: Absolute path to dag folder
+- -r: AAbdsolute path to requirements folder
+`-p` and `-r` are optional of one/or either not provided the default value is use ($PWD/dag or $PWD/requirements)
+
 
 ### Step three: Accessing the Airflow UI
 

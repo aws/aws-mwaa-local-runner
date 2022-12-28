@@ -74,3 +74,5 @@ if [ -n "$INDEX_URL" ]
 then
   pip3 freeze > /requirements.txt
 fi
+
+yum clean all

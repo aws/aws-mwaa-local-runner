@@ -97,7 +97,7 @@ The following section describes where to add your DAG code and supporting files.
 #### DAGs
 
 1. Add DAG code to the `dags/` folder.
-2. To run the sample code in this repository, see the `tutorial.py` file.
+2. To run the sample code in this repository, see the `example_dag_with_taskflow_api.py` file.
 
 #### Requirements.txt
 

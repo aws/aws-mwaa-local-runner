@@ -13,17 +13,14 @@ The CLI builds a Docker container image locally that’s similar to a MWAA produ
 
 ```text
 dags/
-  example_dag_with_custom_ssh_plugin.py
-  example_dag_with_taskflow_api.py
-  tutorial.py
-requirements/  
-  requirements.txt
+  example_lambda.py
+  example_dag_with_taskflow_api.py    
+  example_redshift_data_execute_sql.py
 docker/
   config/
     airflow.cfg
     constraints.txt
     mwaa-base-providers-requirements.txt
-    requirements.txt
     webserver_config.py
     .env.localrunner
   script/
@@ -36,7 +33,8 @@ docker/
   docker-compose-sequential.yml
   Dockerfile
 plugins/
-  ssh_plugin.py
+requirements/  
+  requirements.txt
 .gitignore
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
@@ -129,7 +127,7 @@ Successfully installed aws-batch-0.6 awscli-1.19.21 botocore-1.20.21 docutils-0.
 
 #### Custom plugins
 
-- There is a directory at the root of this repository called plugins. It contains a sample plugin ```ssh_plugin.py```
+- There is a directory at the root of this repository called plugins. 
 - In this directory, create a file for your new custom plugin. For example:
 
 ```bash

@@ -125,18 +125,21 @@ Installing collected packages: botocore, docutils, pyasn1, rsa, awscli, aws-batc
 Successfully installed aws-batch-0.6 awscli-1.19.21 botocore-1.20.21 docutils-0.15.2 pyasn1-0.4.8 rsa-4.7.2
 ```
 
+3. To package the necessary WHL files for your requirements.txt without running Apache Airflow, use the following script:
+
+```bash
+./mwaa-local-env package-requirements
+```
+
+For example usage see [Installing Python dependencies using PyPi.org Requirements File Format Option two: Python wheels (.whl)](https://docs.aws.amazon.com/mwaa/latest/userguide/best-practices-dependencies.html#best-practices-dependencies-python-wheels).
+
 #### Custom plugins
 
 - There is a directory at the root of this repository called plugins. 
-- In this directory, create a file for your new custom plugin. For example:
+- In this directory, create a file for your new custom plugin.
+- Add any Python dependencies to `requirements/requirements.txt`.
 
-```bash
-ssh_plugin.py
-```
-
-- (Optional) Add any Python dependencies to `requirements/requirements.txt`.
-
-**Note**: this step assumes you have a DAG that corresponds to the custom plugin. For examples, see [MWAA Code Examples](https://docs.aws.amazon.com/mwaa/latest/userguide/sample-code.html).
+**Note**: this step assumes you have a DAG that corresponds to the custom plugin. For example usage [MWAA Code Examples](https://docs.aws.amazon.com/mwaa/latest/userguide/sample-code.html).
 
 ## What's next?
 

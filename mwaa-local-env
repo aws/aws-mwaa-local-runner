@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AIRFLOW_VERSION=2_2
+AIRFLOW_VERSION=2_4
 DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
 
 display_help() {
@@ -9,7 +9,7 @@ display_help() {
    echo "   MWAA Local Runner CLI"
    echo "======================================"
    echo "Syntax: mwaa-local-runner [command]"
-   echo
+   echo "Airflow version $AIRFLOW_VERSION"
    echo "---commands---"
    echo "help                   Print CLI help"
    echo "build-image            Build Image Locally"

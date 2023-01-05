@@ -169,13 +169,15 @@ To learn more, see [Amazon MWAA Execution Role](https://docs.aws.amazon.com/mwaa
 
 The following section contains errors you may encounter when using the Docker container image in this repository.
 
-### My environment is not starting - process failed with dag_stats_table already exists
+### My environment is not starting
 
 - If you encountered [the following error](https://issues.apache.org/jira/browse/AIRFLOW-3678): `process fails with "dag_stats_table already exists"`, you'll need to reset your database using the following command:
 
 ```bash
 ./mwaa-local-env reset-db
 ```
+
+- If you are moving from an older version of local-runner you may need to run the above reset-db command, or delete your `./db-data` folder. Note, too, that newer Airflow versions have newer provider packages, which may require updating your DAG code.
 
 ### Fernet Key InvalidToken
 

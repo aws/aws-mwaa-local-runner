@@ -24,7 +24,7 @@ services:
 
     local-runner:
         image: amazon/mwaa-local:2_2
-        platform: "linux/arm64/v8"
+        platform: "linux/amd64"
         restart: always
         depends_on:
             - postgres

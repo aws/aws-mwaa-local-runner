@@ -4,4 +4,4 @@
 /.idea
 /logs
 /db-data
-docker/config/.env.localrunner
+local.env

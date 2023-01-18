@@ -1,16 +1,16 @@
-# VERSION 2.2
+# VERSION 2.4
 # AUTHOR: John Jackson
 # DESCRIPTION: Amazon MWAA Local Dev Environment
 # BUILD: docker build --rm -t amazon/mwaa-local .
 
-FROM amazonlinux
+FROM --platform=linux/amd64 amazonlinux
 LABEL maintainer="amazon"
 
 # Airflow
 ## Version specific ARGs
-ARG AIRFLOW_VERSION=2.2.2
+ARG AIRFLOW_VERSION=2.4.3
 ARG WATCHTOWER_VERSION=2.0.1
-ARG PROVIDER_AMAZON_VERSION=2.4.0
+ARG PROVIDER_AMAZON_VERSION=6.0.0
 
 ## General ARGs
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
@@ -19,13 +19,14 @@ ARG PYTHON_DEPS=""
 ARG SYSTEM_DEPS=""
 ARG INDEX_URL=""
 ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
-ENV PATH="$PATH:/usr/local/airflow/.local/bin:/root/.local/bin:/usr/local/airflow/.local/lib/python3.7/site-packages"
+ENV PATH="$PATH:/usr/local/airflow/.local/bin:/root/.local/bin:/usr/local/airflow/.local/lib/python3.10/site-packages"
+ENV PYTHON_VERSION=3.10.9
 
 COPY script/bootstrap.sh /bootstrap.sh
 COPY script/systemlibs.sh /systemlibs.sh
 COPY script/generate_key.sh /generate_key.sh
 COPY config/constraints.txt /constraints.txt
-COPY config/requirements.txt /requirements.txt
+#COPY config/requirements.txt /requirements.txt
 COPY config/mwaa-base-providers-requirements.txt /mwaa-base-providers-requirements.txt
 
 RUN chmod u+x /systemlibs.sh && /systemlibs.sh
@@ -40,15 +41,9 @@ COPY config/webserver_config.py ${AIRFLOW_USER_HOME}/webserver_config.py
 RUN chown -R airflow: ${AIRFLOW_USER_HOME}
 RUN chmod +x /entrypoint.sh
 
-# Fix sqlite version
-RUN yum -y install wget tar gzip gcc make expect
-COPY fix_sqlite.sh fix_sqlite.sh
-RUN /bin/bash fix_sqlite.sh
-
 EXPOSE 8080 5555 8793
 
 USER airflow
-ENV LD_LIBRARY_PATH /usr/local/lib:$LD_LIBRARY_PATH
 WORKDIR ${AIRFLOW_USER_HOME}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["local-runner"]

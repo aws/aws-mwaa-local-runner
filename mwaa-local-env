@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AIRFLOW_VERSION=2_2
+AIRFLOW_VERSION=2_4
 DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
 
 display_help() {
@@ -55,38 +55,7 @@ validate_prereqs() {
 build_image() {
    docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
 }
-
-case "$1" in
-validate-prereqs)
-   validate_prereqs
-   ;;
-test-requirements)
-   BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
-   if [[ -n "$BUILT_IMAGE" ]]; then
-     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION exists. Skipping build"
-   else
-     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
-     build_image
-   fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
-   ;;
-package-requirements)
-   BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
-   if [[ -n "$BUILT_IMAGE" ]]; then
-     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION exists. Skipping build"
-   else
-     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
-     build_image
-   fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
-   ;;   
-build-image)
-   build_image
-   ;;
-reset-db)
-   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up --abort-on-container-exit
-   ;;
-start)
+airflow_cmd=$1
 while true ; do
     case "$2" in
         -p )
@@ -105,10 +74,40 @@ while true ; do
         ;;
     esac 
 done;
+case "$airflow_cmd" in
+validate-prereqs)
+   validate_prereqs
+   ;;
+test-requirements)
+   BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
+   if [[ -n "$BUILT_IMAGE" ]]; then
+     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION exists. Skipping build"
+   else
+     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
+     build_image
+   fi
+
+   docker run -v ${dag_path:-$(pwd)/dags}:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v ${requiremnets_path:-$(pwd)/requirements}:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
+   ;;
+package-requirements)
+   BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
+   if [[ -n "$BUILT_IMAGE" ]]; then
+     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION exists. Skipping build"
+   else
+     echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
+     build_image
+   fi
+   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
+   ;;   
+build-image)
+   build_image
+   ;;
+reset-db)
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up --abort-on-container-exit
+   ;;
+start)
 
 requiremnets_path=$requiremnets_path dag_path=$dag_path docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up -d
-   
-   
    ;;
 stop)
    docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml down

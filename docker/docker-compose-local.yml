@@ -12,7 +12,6 @@ services:
                 max-file: "3"
         volumes:
             - "${PWD}/db-data:/var/lib/postgresql/data"
-
     docker-in-docker:
         image: bobrik/socat
         platform: "linux/amd64"
@@ -23,7 +22,7 @@ services:
             -  /var/run/docker.sock:/var/run/docker.sock
 
     local-runner:
-        image: amazon/mwaa-local:2_2
+        image: amazon/mwaa-local:2_4
         platform: "linux/amd64"
         restart: always
         depends_on:

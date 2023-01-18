@@ -41,6 +41,11 @@ COPY config/webserver_config.py ${AIRFLOW_USER_HOME}/webserver_config.py
 RUN chown -R airflow: ${AIRFLOW_USER_HOME}
 RUN chmod +x /entrypoint.sh
 
+# Fix sqlite version
+RUN yum -y install wget tar gzip gcc make expect
+COPY fix_sqlite.sh fix_sqlite.sh
+RUN /bin/bash fix_sqlite.sh
+ENV LD_LIBRARY_PATH=/usr/local/lib
 EXPOSE 8080 5555 8793
 
 USER airflow

@@ -33,6 +33,7 @@ docker/
   docker-compose-sequential.yml
   Dockerfile
 plugins/
+  README.md
 requirements/  
   requirements.txt
 .gitignore

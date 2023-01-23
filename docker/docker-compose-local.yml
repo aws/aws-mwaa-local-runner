@@ -42,4 +42,4 @@ services:
       timeout: 30s
       retries: 3
     env_file:
-      - ./config/.env.localrunner
+      - ./config/local.env

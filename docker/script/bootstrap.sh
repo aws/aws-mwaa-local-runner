@@ -10,7 +10,9 @@ adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 yum install -y sudo
 
 yum erase openssl-devel -y
-yum install openssl11 openssl11-devel libffi-devel bzip2-devel wget tar xz -y 
+yum install openssl11 openssl11-devel libffi-devel bzip2-devel wget tar xz -y
+# Install python optional standard libary module dependencies 
+yum install ncurses-devel gdbm-devel readline-devel xz-libs xz-devel uuid-devel libuuid-devel -y 
 yum install glibc -y
 
 # install system dependency to enable the installation of most Airflow extras

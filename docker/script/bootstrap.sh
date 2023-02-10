@@ -9,11 +9,14 @@ yum install -y shadow-utils
 adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 yum install -y sudo
 
-yum groupinstall "Development Tools" -y
 yum erase openssl-devel -y
-yum install openssl11 openssl11-devel libffi-devel bzip2-devel wget tar xz -y # PRIOR TO RELEASE REVIEW LICENSES AND REMOVE WHERE NEEDED
+yum install openssl11 openssl11-devel libffi-devel bzip2-devel wget tar xz -y
+# Install python optional standard libary module dependencies 
+yum install ncurses-devel gdbm-devel readline-devel xz-libs xz-devel uuid-devel libuuid-devel -y 
 yum install glibc -y
 
+# install system dependency to enable the installation of most Airflow extras
+yum install -y gcc gcc-c++ cyrus-sasl-devel python3-devel python3-wheel make
 
 # install sqlite to avoid local-runner Airflow error messages
 yum install -y sqlite-devel
@@ -39,6 +42,19 @@ pip3 install $PIP_OPTION --upgrade pip
 
 # openjdk is required for JDBC to work with Airflow
 yum install -y java-1.8.0-openjdk
+
+# Installing mariadb-devel dependency for apache-airflow-providers-mysql.
+# The mariadb-devel provided by AL2 conflicts with openssl11 which is required Python 3.10
+# so a newer version of the dependency must be installed from source.
+sudo mkdir mariadb_rpm
+sudo chown airflow /mariadb_rpm
+wget https://mirror.its.dal.ca/mariadb/yum/10.8/centos7-amd64/rpms/MariaDB-common-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+wget https://mirror.its.dal.ca/mariadb/yum/10.8/centos7-amd64/rpms/MariaDB-compat-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+wget https://mirror.its.dal.ca/mariadb/yum/10.8/centos7-amd64/rpms/MariaDB-shared-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+wget https://mirror.its.dal.ca/mariadb/yum/10.8/centos7-amd64/rpms/MariaDB-devel-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+
+# install mariadb_devel and its dependencies
+sudo rpm -ivh /mariadb_rpm/*
 
 # install minimal Airflow packages
 sudo -u airflow pip3 install $PIP_OPTION --no-use-pep517 --constraint /constraints.txt poetry
@@ -67,10 +83,7 @@ MWAA_BASE_PROVIDERS_FILE=/mwaa-base-providers-requirements.txt
 echo "Installing providers supported for airflow version ${AIRFLOW_VERSION}"
 sudo -u airflow pip3 install $PIP_OPTION -r $MWAA_BASE_PROVIDERS_FILE
 
-# install system dependency to enable the installation of most Airflow extras
-yum install -y gcc-c++ cyrus-sasl-devel
-
-# jq is used to parse ECS-injected AWSSecretsManager secrets
+# jq is used to parse json
 yum install -y jq
 
 # nc is used to check DB connectivity
@@ -88,11 +101,5 @@ unzip $zip_file
 rm $zip_file
 rm -rf ./aws
 cd -  # Return to previous directory
-
-# snapshot the packages
-if [ -n "$INDEX_URL" ]
-then
-  find /packages/ -maxdepth 1 -not -name "watchtower-2.0.1-py3-none-any.whl" -exec rm -f {} \;
-fi
 
 yum clean all

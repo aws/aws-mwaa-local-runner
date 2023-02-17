@@ -1,5 +1,5 @@
---constraint "/usr/local/airflow/dags/constraints-3.7-amazon-6.0.txt"
+--constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.4.3/constraints-3.10.txt"
 
-apache-airflow-providers-amazon==6.0.0
-apache-airflow-providers-docker==2.3.0
-airflow_multi_dagrun==2.2.0
+apache-airflow-providers-snowflake==3.3.0
+airflow_multi_dagrun==2.3.1
+apache-airflow-providers-docker==3.2.0

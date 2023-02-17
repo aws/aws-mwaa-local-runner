@@ -87,7 +87,7 @@ test-requirements)
      build_image
    fi
 
-   docker run -v ${dag_path:-$(pwd)/dags}:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v ${requiremnets_path:-$(pwd)/requirements}:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
+   docker run --platform linux/amd64 -v ${dag_path:-$(pwd)/dags}:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v ${requiremnets_path:-$(pwd)/requirements}:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
    ;;
 package-requirements)
    BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)

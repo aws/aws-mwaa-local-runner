@@ -56,6 +56,7 @@ build_image() {
       docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker --platform linux/amd64
    else
       docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
+   fi
 }
 
 case "$1" in

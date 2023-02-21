@@ -15,7 +15,6 @@ services:
 
     resetdb:
         image: amazon/mwaa-local:2_4
-        platform: "linux/amd64"
         depends_on:
             - postgres
         environment:

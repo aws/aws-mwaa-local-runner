@@ -48,10 +48,18 @@ yum install -y java-1.8.0-openjdk
 # so a newer version of the dependency must be installed from source.
 sudo mkdir mariadb_rpm
 sudo chown airflow /mariadb_rpm
-wget https://dlm.mariadb.com/2596575/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-common-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
-wget https://dlm.mariadb.com/2596577/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-compat-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
-wget https://dlm.mariadb.com/2596582/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-shared-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
-wget https://dlm.mariadb.com/2596593/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-devel-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+
+if [[ $(uname -p) == "aarch64" ]]; then
+	wget https://dlm.mariadb.com/2592621/MariaDB/mariadb-10.8.6/yum/rhel7-aarch64/rpms/MariaDB-common-10.8.4-1.el7.centos.aarch64.rpm -P /mariadb_rpm
+	wget https://dlm.mariadb.com/2592615/MariaDB/mariadb-10.8.6/yum/rhel7-aarch64/rpms/MariaDB-compat-10.8.4-1.el7.centos.aarch64.rpm -P /mariadb_rpm
+	wget https://dlm.mariadb.com/2592630/MariaDB/mariadb-10.8.6/yum/rhel7-aarch64/rpms/MariaDB-shared-10.8.4-1.el7.centos.aarch64.rpm -P /mariadb_rpm
+	wget https://dlm.mariadb.com/2592622/MariaDB/mariadb-10.8.6/yum/rhel7-aarch64/rpms/MariaDB-devel-10.8.4-1.el7.centos.aarch64.rpm -P /mariadb_rpm
+else
+	wget https://dlm.mariadb.com/2596575/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-common-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+	wget https://dlm.mariadb.com/2596577/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-compat-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+	wget https://dlm.mariadb.com/2596582/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-shared-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+	wget https://dlm.mariadb.com/2596593/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-devel-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
+fi
 
 # install mariadb_devel and its dependencies
 sudo rpm -ivh /mariadb_rpm/*

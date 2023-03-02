@@ -42,7 +42,7 @@ package_requirements() {
         echo "Packaging requirements.txt into plugins"
         pip3 download -r "$AIRFLOW_HOME/$REQUIREMENTS_FILE" -d "$AIRFLOW_HOME/plugins"
         cd "$AIRFLOW_HOME/plugins"
-        zip "$AIRFLOW_HOME/requirements/plugins.zip" *
+        zip -r "$AIRFLOW_HOME/requirements/plugins.zip" *
         printf '%s\n%s\n' "--no-index" "$(cat $AIRFLOW_HOME/$REQUIREMENTS_FILE)" > "$AIRFLOW_HOME/requirements/packaged_requirements.txt"
         printf '%s\n%s\n' "--find-links /usr/local/airflow/plugins" "$(cat $AIRFLOW_HOME/requirements/packaged_requirements.txt)" > "$AIRFLOW_HOME/requirements/packaged_requirements.txt"
     fi

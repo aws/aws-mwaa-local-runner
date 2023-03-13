@@ -8,7 +8,7 @@ import requests
 # airflow
 from airflow import DAG
 from airflow.models import Variable
-from airflow.providers.amazon.aws.operators.ecs import EcsOperator
+from airflow.providers.amazon.aws.operators.ecs import EcsRunTaskOperator
 
 
 def get_start_timestamp(delay_minutes: Opt[int] = None) -> str:
@@ -58,7 +58,7 @@ def dbt_operator(
     dbt_command = ' '.join(command)
     airflow_environment = Variable.get('airflow_environment')
 
-    return EcsOperator(
+    return EcsRunTaskOperator(
         aws_conn_id=get_dbt_role_connection(),
         dag=dag,
         task_id=task_id,
@@ -133,7 +133,7 @@ def dbt_operator(
             }]
         },
         cluster=cluster,
-        #region_name=region_name,
+        region=region_name,
         task_definition=task_definition,
         launch_type='FARGATE',
         network_configuration={

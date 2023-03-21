@@ -1,4 +1,20 @@
 --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.4.3/constraints-3.10.txt"
 
-apache-airflow-providers-snowflake==3.3.0
-apache-airflow-providers-mysql==3.2.1
+boto3
+botocore
+certifi
+msrest
+pycryptodomex
+requests
+sagemaker
+slackclient
+snowflake-connector-python
+snowflake-ingest
+snowflake-sqlalchemy
+urllib3
+pyarrow
+airflow-dbt
+datadog
+apache-airflow-providers-amazon
+apache-airflow-providers-snowflake
+apache-airflow-providers-mysql

@@ -3,6 +3,7 @@ from airflow.models import BaseOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
+
 class PostgresToS3WithSchemaOperator(BaseOperator):
 
     def __init__(
@@ -35,7 +36,6 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
     def execute(self, context):
         # Initialize hooks
         s3_hook = S3Hook(aws_conn_id=self.s3_conn_id)
-        postgres_hook = PostgresHook(postgres_conn_id=self.postgres_conn_id)
 
         # Get table name
         if self.table_name is None:
@@ -84,6 +84,7 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                 partitions_to_process.append(partition)
         
         for partition in partitions_to_process:
+            postgres_hook = PostgresHook(postgres_conn_id=self.postgres_conn_id, connect_timeout=600)
 
             # Delete data in dir
             s3_prefix = f"{self.s3_export_dir}/{self.schema}/{self.table_name}/{partition.split('.')[0]}/{partition.split('.')[1]}"
@@ -97,7 +98,7 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                 self.log.info(f"No objects found with prefix {s3_prefix} in S3 bucket {self.s3_bucket}")
             
             # Construct query
-            select_clause = ", ".join(column_names)
+            select_clause = ", ".join([ '"' + column_name + '"' for column_name in column_names])
             query = f"SELECT {select_clause} FROM {partition} {where_clause}"
             print(query)
 
@@ -106,7 +107,7 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
 
             sql = f"SELECT * FROM aws_s3.query_export_to_s3('{query}', aws_commons.create_s3_uri('{self.s3_bucket}', '{s3_key}', 'us-east-1'), options :='format csv');"
             postgres_hook.run(sql)
-
+            
             if partition not in previously_exported_partitions:
                 partitions['previously_exported_partitions'].append(
                     {
@@ -115,12 +116,13 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                         'updated_ds': self.transfer_ds
                         }
                 )
+            print(partitions['previously_exported_partitions'])
             
             file_contents = json.dumps(partitions, indent=4)
             print(f"Writing {partition} to S3")
             s3_hook.load_string(
                 string_data=file_contents,
-                key=s3_key,
+                key=partition_key,
                 bucket_name=self.s3_bucket,
                 replace=True
             )

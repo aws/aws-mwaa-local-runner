@@ -100,8 +100,7 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
             # Construct query
             select_clause = ", ".join([ '"' + column_name + '"' for column_name in column_names])
             query = f"SELECT {select_clause} FROM {partition} {where_clause}"
-            print(query)
-
+            
             # Export data to S3
             s3_key = f"{self.s3_export_dir}/{self.schema}/{self.table_name}/{partition.split('.')[0]}/{partition.split('.')[1]}/{partition.split('.')[1]}.csv"
 
@@ -116,10 +115,8 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                         'updated_ds': self.transfer_ds
                         }
                 )
-            print(partitions['previously_exported_partitions'])
             
             file_contents = json.dumps(partitions, indent=4)
-            print(f"Writing {partition} to S3")
             s3_hook.load_string(
                 string_data=file_contents,
                 key=partition_key,

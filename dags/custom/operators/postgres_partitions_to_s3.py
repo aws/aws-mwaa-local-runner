@@ -150,8 +150,10 @@ class PostgresPartitionsToS3Operator(BaseOperator):
                     # merge the contents of table['partitions'] into file_dict['partitions']
                     # if the partition is already in the list, skip it
                     # if the partition is not in the list, add it
-                    for partition in table['partitions']:
-                        if partition not in file_dict['partitions']:
+                    all_previous_partitions = [partition['partition_name'] for partition in file_dict['partitions']]
+                    all_current_partitions = [partition['partition_name'] for partition in table['partitions']]
+                    for partition in all_current_partitions:
+                        if partition not in all_previous_partitions:
                             file_dict['partitions'].append(partition)
                     # sort the partitions by updated_ds
                     table['partitions'] = sorted(file_dict['partitions'], key=lambda k: k['updated_ds'])

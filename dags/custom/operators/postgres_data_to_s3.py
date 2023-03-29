@@ -84,6 +84,7 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                 partitions_to_process.append(partition)
         
         for partition in partitions_to_process:
+            # Example partition name: public.users or partitions.user_session_20231212
             postgres_hook = PostgresHook(postgres_conn_id=self.postgres_conn_id, connect_timeout=600)
 
             # Delete data in dir

@@ -79,6 +79,7 @@ with DAG(
         task_id='verify_metadata',
         postgres_db = POSTGRES_DB,
         s3_bucket = S3_BUCKET,
+        # TODO: Should we be defining the below directories glabally and passing them to the tasks above?
         s3_schema_dir = 'metadata/schema',
         s3_partition_dir = 'metadata/partitions',
         table_list_variable_name = 'peanut_analytics_tables',

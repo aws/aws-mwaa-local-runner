@@ -2,7 +2,7 @@ import json
 from airflow.models import BaseOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from custom.hooks.postgres_query_hook import PostgresQueryHook
-from custom.functions.get_latest_rds_cpu_load import get_latest_rds_cpu_load
+from custom.functions.is_rds_available_and_cpu_low import is_rds_available_and_cpu_low
 import time
 
 class PostgresToS3WithSchemaOperator(BaseOperator):
@@ -97,7 +97,7 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                     INNER JOIN (
                         SELECT TABLE_NAME AS parent_table
                         FROM information_schema.tables
-                        WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+                        WHERE table_schema = '{partition['schema']}' AND table_type = 'BASE TABLE'
                     ) AS t ON t.parent_table = c.table_name
                     WHERE
                         c.table_schema = '{partition['schema']}' AND table_name = '{partition['name']}'
@@ -155,6 +155,7 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                 # Add column name in quotes because one table has a column called "do" (in quotes) and another table has a column called reference, which is a reserved word in sql
                 select_clause = ", ".join([ f'"{column}"' for column in columns])
                 table_query = f"SELECT {select_clause} FROM {partition['path']} {where_clause}"
+                print(table_query)
                 
                 # Export data to S3
                 data_s3_key = f"{self.s3_export_dir}/{self.db_schema}/{self.table_name}/{partition['schema']}/{partition['name']}/data.csv"
@@ -162,9 +163,10 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                 # Using the above query in the export function
                 export_query = f"SELECT * FROM aws_s3.query_export_to_s3('{table_query}', aws_commons.create_s3_uri('{self.s3_bucket}', '{data_s3_key}', 'us-east-1'), options :='format csv');"
                 
-                while get_latest_rds_cpu_load('peanut-prod-replica1', 'aws_default') > 75:
-                    self.log.info(f"RDS CPU load is high. Waiting 20 seconds before exporting data")
+                while not is_rds_available_and_cpu_low('peanut-prod-replica1', 'aws_default', 80):
+                    self.log.info(f"RDS is starting up. Waiting 20 seconds before looking again")
                     time.sleep(20)
+                
                 postgres_hook.run(export_query)
 
                 # Update partition information

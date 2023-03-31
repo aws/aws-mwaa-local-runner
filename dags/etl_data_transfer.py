@@ -10,7 +10,6 @@ from airflow.models import Variable
 
 from custom.operators.postgres_partitions_to_s3 import PostgresPartitionsToS3Operator
 from custom.operators.postgres_data_to_s3 import PostgresToS3WithSchemaOperator
-# import dummy_operator
 from airflow.operators.dummy_operator import DummyOperator
 
 S3_BUCKET = Variable.get('etl_s3_bucket', deserialize_json=False)
@@ -72,7 +71,7 @@ with DAG(
 
     peanut_analytics_tables = Variable.get('peanut_analytics_tables', deserialize_json=True, default_var=None)
 
-    for table in peanut_analytics_tables[0:10]:
+    for table in peanut_analytics_tables:
         postgres_data_to_s3 = PostgresToS3WithSchemaOperator(
             task_id = f"{table}_to_s3",
             s3_bucket = S3_BUCKET,

@@ -1,0 +1,25 @@
+version: '2.1'
+orbs:
+  aws-s3: circleci/aws-s3@3.0
+jobs:
+  build:
+    docker:
+      - image: 'cimg/python:3.6'
+    steps:
+      - checkout
+      - aws-s3/sync:
+          arguments: |
+            --only-show-errors \
+            --delete \
+            --exclude ".git/*" \
+            --exclude "logs/*" \
+            --cache-control "max-age=86400"
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-region: AWS_REGION
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          from: .
+          to: 's3://peanut-airflow-prod/'
+workflows:
+  s3-example:
+    jobs:
+      - build

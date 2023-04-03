@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from airflow.hooks.base import BaseHook
 
 
-def is_rds_available_and_cpu_low(rds_instance_identifier, aws_conn_id, cpu_threshold):
+def is_rds_available(rds_instance_identifier, aws_conn_id, cpu_threshold):
     aws_connection = BaseHook.get_connection(aws_conn_id)
     aws_access_key_id = aws_connection.login
     aws_secret_access_key = aws_connection.password

@@ -12,6 +12,7 @@ from custom.operators.postgres_partitions_to_s3 import PostgresPartitionsToS3Ope
 from custom.operators.postgres_data_to_s3 import PostgresToS3WithSchemaOperator
 from airflow.operators.dummy_operator import DummyOperator
 
+from custom.operators.slack_webhook_operator import task_failure_callback
 
 S3_BUCKET = Variable.get('etl_s3_bucket', deserialize_json=False)
 POSTGRES_DB = Variable.get('etl_postgres_db', deserialize_json=False)
@@ -38,7 +39,8 @@ with DAG(
     schedule_interval='10 0 * * *',
     default_args=default_args,
     catchup=False,
-    tags=['etl']
+    tags=['etl'],
+    on_failure_callback=task_failure_callback
     ) as dag:
     
     # Store the 'ds' macro to an Airflow variable
@@ -87,7 +89,6 @@ with DAG(
 
         )
         start_table_processing >> postgres_data_to_s3
-
 
     store_ds_macro >> [
         postgres_partitions_to_s3

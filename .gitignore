@@ -5,3 +5,4 @@ dags/**/*.pyc
 /logs
 /db-data
 .DS_Store
+.vscode

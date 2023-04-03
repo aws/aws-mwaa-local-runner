@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from airflow.providers.postgres.hooks.postgres import PostgresHook
+import time
 
 class PostgresQueryHook(PostgresHook):
     """
@@ -29,7 +30,7 @@ class PostgresQueryHook(PostgresHook):
         super().__init__(postgres_conn_id=postgres_conn_id)
         self.schema = schema
     
-    def get_results(self, query: str, parameters: Tuple = None) -> List[Tuple]:
+    def get_results(self, query: str, parameters: Tuple = None, max_retries: int = 3, retry_delay_secs: int = 20) -> List[Tuple]:
         """
         Executes a SQL query on the PostgreSQL database and returns the results as a list of tuples.
 
@@ -39,11 +40,22 @@ class PostgresQueryHook(PostgresHook):
         Args:
             query: The SQL query string to execute.
             parameters: Optional tuple of query parameters to substitute into the query.
+            max_retries: The maximum number of times to retry the query in case of an error.
+            retry_delay_secs: The delay between retries in seconds.
 
         Returns:
             A list of tuples representing the query results.
         """
-        with self.get_conn() as conn:
-            with conn.cursor() as cursor:
-                cursor.execute(query, parameters)
-                return cursor.fetchall()
+        for i in range(max_retries + 1):
+            try:
+                with self.get_conn() as conn:
+                    with conn.cursor() as cursor:
+                        cursor.execute(query, parameters)
+                        return cursor.fetchall()
+            except Exception as e:
+                if i < max_retries:
+                    self.log.warning(f"Query failed ({str(e)}). Retrying in {retry_delay_secs} seconds...")
+                    time.sleep(retry_delay_secs)
+                else:
+                    self.log.error(f"Query failed after {max_retries} retries. Last error: {str(e)}")
+                    raise

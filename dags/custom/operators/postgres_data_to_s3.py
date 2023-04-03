@@ -130,6 +130,53 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                     else:
                         time_column = None
                 
+                # Construct query
+                # Add column name in quotes because one table has a column called "do" (in quotes) and another table has a column called reference, which is a reserved word in sql
+                select_clause = ", ".join([ f'"{column}"' for column in columns])
+
+                # Add transfer date
+                select_clause = select_clause + f", \'\'{self.transfer_ds}\'\'::DATE AS transfer_ds"
+                table_schema.append({
+                    "name": "transfer_ds",
+                    "type": "date",
+                    "default": None,
+                    "nullable": False,
+                    "primary_key": False,
+                    "index": False
+                })
+
+                # Add original database, schema, and table
+                select_clause = select_clause + f", \'\'{self.db}\'\' AS original_database"
+                table_schema.append({
+                    "name": "original_database",
+                    "type": "text",
+                    "default": None,
+                    "nullable": False,
+                    "primary_key": False,
+                    "index": False
+                })
+
+                select_clause = select_clause + f', \'\'{partition["schema"]}\'\' AS original_schema'
+                table_schema.append({
+                    "name": "original_schema",
+                    "type": "text",
+                    "default": None,
+                    "nullable": False,
+                    "primary_key": False,
+                    "index": False
+                })
+
+                select_clause = select_clause + f', \'\'{partition["name"]}\'\' AS original_table'
+                table_schema.append({
+                    "name": "original_table",
+                    "type": "text",
+                    "default": None,
+                    "nullable": False,
+                    "primary_key": False,
+                    "index": False
+                })
+
+                
                 schema_file = {
                     "columns": table_schema,
                     "time_column": time_column
@@ -151,11 +198,9 @@ class PostgresToS3WithSchemaOperator(BaseOperator):
                                 where_clause = f"WHERE {time_column}::DATE <= ''{self.transfer_ds}''::DATE"
                                 break
                 
-                # Construct query
-                # Add column name in quotes because one table has a column called "do" (in quotes) and another table has a column called reference, which is a reserved word in sql
-                select_clause = ", ".join([ f'"{column}"' for column in columns])
                 table_query = f"SELECT {select_clause} FROM {partition['path']} {where_clause}"
                 print(table_query)
+
                 
                 # Export data to S3
                 data_s3_key = f"{self.s3_export_dir}/{self.db_schema}/{self.table_name}/{partition['schema']}/{partition['name']}/data.csv"

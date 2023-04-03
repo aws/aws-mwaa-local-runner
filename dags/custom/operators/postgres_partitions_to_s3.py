@@ -2,6 +2,7 @@ from airflow.models import BaseOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from custom.hooks.postgres_query_hook import PostgresQueryHook
 import json
+from airflow.models import Variable
 
 class PostgresPartitionsToS3Operator(BaseOperator):
     
@@ -12,8 +13,9 @@ class PostgresPartitionsToS3Operator(BaseOperator):
         s3_bucket: str,
         schema: str,
         postgres_db: str,
-        s3_prefix: str = "metadata/partitions",
+        s3_prefix: str,
         transfer_ds: str = None,
+        table_list_variable_name: str = None,
         *args,
         **kwargs,
     ):
@@ -25,6 +27,7 @@ class PostgresPartitionsToS3Operator(BaseOperator):
         self.schema = schema
         self.s3_prefix = s3_prefix
         self.transfer_ds = transfer_ds
+        self.table_list_variable_name = table_list_variable_name
 
     def execute(self, context):
         
@@ -108,30 +111,28 @@ class PostgresPartitionsToS3Operator(BaseOperator):
             attached = row[5]
 
             if table_name not in tables:
-                tables[table_name] = {
-                    'table_name': table_name,
-                    'partitions': [],
-                    'active_partitions': [],
-                    'previously_active_partitions': None,
-                    'inactive_partitions': [],
-                    'previously_exported_partitions': None
-                }
+                tables[table_name] = []
             
-            partition_dict = {
-                'source_schema': source_schema,
-                'partition_name': partition_name,
-                'updated_ds': self.transfer_ds
+            tables[table_name].append(
+                {
+                'path': f"{source_schema}.{partition_name}",
+                'schema': source_schema,
+                'name': partition_name,
+                'attached': attached,
+                'updated_ds': self.transfer_ds,
+                'last_exported_ds': None,
+                'attached_on_last_export': None,
+                'last_ingested_ds': None,
+                'attached_on_last_ingestion': None
                 }
-            tables[table_name]['partitions'].append(partition_dict)
-            if attached:
-                tables[table_name]['active_partitions'].append(partition_dict)
-            else:
-                tables[table_name]['inactive_partitions'].append(partition_dict)
+            )
             
         # Loop through the tables and write the files to S3
         # check if a file already exists and if it does, check if the contents are the same
 
+        table_list = []
         for table_name, table in tables.items():
+            table_list.append(table_name)
 
             s3_key = f"{self.s3_prefix}/{self.schema}/{table_name}.json"
 
@@ -140,34 +141,42 @@ class PostgresPartitionsToS3Operator(BaseOperator):
             # if it does, read the file into a dict
             if key_exists:
                 file_contents = s3_hook.read_key(key=s3_key, bucket_name=self.s3_bucket)
-                file_dict = json.loads(file_contents)
+                previous_data_dict = json.loads(file_contents)
+                
                 # if the file contents are the same as the table dict, skip the file
-                if file_dict == table:
+                if previous_data_dict == table:
+                    self.log.info(f"Skipping {table_name} as it has not changed")
                     continue
                 else:
-                    # TODO: add a check to see if the partitioning type has changed for a table
-
-                    # merge the contents of table['partitions'] into file_dict['partitions']
-                    # if the partition is already in the list, skip it
-                    # if the partition is not in the list, add it
-                    for partition in table['partitions']:
-                        if partition not in file_dict['partitions']:
-                            file_dict['partitions'].append(partition)
-                    # sort the partitions by updated_ds
-                    table['partitions'] = sorted(file_dict['partitions'], key=lambda k: k['updated_ds'])
                     
-                    table['previously_active_partitions'] = file_dict['active_partitions']
+                    current_partitions = [partition['path'] for partition in table]
 
-                    if 'previously_exported_partitions' in file_dict:
-                        table['previously_exported_partitions'] = file_dict['previously_exported_partitions']
-                    else:
-                        table['previously_exported_partitions'] = []
+                    previous_schema = [partition['schema'] for partition in previous_data_dict]
+                    current_schema = [partition['schema'] for partition in table]
 
-                    for partition in table['inactive_partitions']:
-                        if partition not in file_dict['inactive_partitions']:
-                            file_dict['inactive_partitions'].append(partition)
+                    # Check to see if the schemas have changed, and raise an exception if they have
+                    if set(current_schema) != set(previous_schema):
+                        raise Exception('Schemas appear to have changed')
+                    
+                    # Loop through the previous partitions and add them to the current partitions if they are not already there
+                    for previous_partition in previous_data_dict:
+                        # Check to see if the previous partition is in the current partitions, and if not, add it to the current partitions list (it will be an old partition that has been deleted from the database)
+                        if previous_partition['path'] not in current_partitions:
+                            self.log.info(f"Adding {previous_partition['path']} partition to {table_name}")
+                            table.append(previous_partition)
+                            continue
+
+                        # Check to see if the partition has changed attached status
+                        for current_partition in table:
+                            if previous_partition['path'] == current_partition['path']:
+                                
+                                previous_partition['attached'] = current_partition['attached']
+                                previous_partition['updated_ds'] = current_partition['updated_ds']
+
+                                current_partition = previous_partition
+
                     # sort the partitions by updated_ds
-                    table['inactive_partitions'] = sorted(file_dict['inactive_partitions'], key=lambda k: k['updated_ds'])
+                    table = sorted(previous_data_dict, key=lambda k: k['name'])                    
 
             file_contents = json.dumps(table, indent=4)
             print(f"Writing {table_name} to S3")
@@ -179,4 +188,6 @@ class PostgresPartitionsToS3Operator(BaseOperator):
             )
             
             self.log.info(f"Outputted partition information for table {table_name} to S3 key {s3_key}")
+        
+        Variable.set(self.table_list_variable_name, table_list, serialize_json=True)
             

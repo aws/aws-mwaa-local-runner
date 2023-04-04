@@ -62,6 +62,21 @@ wait_for_port() {
   done
 }
 
+execute_startup_script() {
+  # Execute customer provided shell script
+  if [[ -e "$AIRFLOW_HOME/startup/startup.sh" ]]
+   then
+     bash /shell-launch-script.sh
+     source stored_env
+     export AIRFLOW_HOME="/usr/local/airflow"
+     export AIRFLOW__CORE__EXECUTOR="SequentialExecutor"
+     export AIRFLOW__CORE__LOAD_EXAMPLES="False"
+     cd "$AIRFLOW_HOME"
+  else
+    echo "No startup script found, skipping execution."
+  fi
+}
+
 # Other executors than SequentialExecutor drive the need for an SQL database, here PostgreSQL is used
 if [ "$AIRFLOW__CORE__EXECUTOR" != "SequentialExecutor" ]; then
   # Check if the user has provided explicit Airflow configuration concerning the database
@@ -112,6 +127,7 @@ case "$1" in
       aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
     fi        
     install_requirements
+    execute_startup_script
     airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.
@@ -134,6 +150,9 @@ case "$1" in
       aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
     fi      
     install_requirements
+    ;;
+  test-startup-script)
+    execute_startup_script
     ;;
   package-requirements)
     # if S3_REQUIREMENTS_PATH

@@ -16,6 +16,7 @@ display_help() {
    echo "reset-db               Reset local PostgresDB container."
    echo "start                  Start Airflow local environment. (LocalExecutor, Using postgres DB)"
    echo "test-requirements      Install requirements on an ephemeral instance of the container."
+   echo "test-startup-script    Execute shell script on an ephemeral instance of the container."
    echo "package-requirements   Download requirements WHL files into plugins folder."
    echo "validate-prereqs       Validate pre-reqs installed (docker, docker-compose, python3, pip3)"
    echo
@@ -68,6 +69,16 @@ test-requirements)
      build_image
    fi
    docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
+   ;;
+test-startup-script)
+   BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
+   if [[ -n "$BUILT_IMAGE" ]]; then
+      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION exists. Skipping build"
+   else
+      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
+      build_image
+   fi
+   docker run -v $(pwd)/startup_script:/usr/local/airflow/startup -it amazon/mwaa-local:$AIRFLOW_VERSION test-startup-script
    ;;
 package-requirements)
    BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)

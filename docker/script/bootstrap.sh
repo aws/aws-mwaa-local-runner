@@ -9,6 +9,8 @@ yum install -y shadow-utils
 adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 yum install -y sudo
 
+echo 'airflow ALL=(ALL)NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
+
 # install basic python environment and other required dependencies
 yum install -y python37 gcc gcc-g++ python3-devel python3-wheel
 

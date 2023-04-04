@@ -140,6 +140,16 @@ ssh_plugin.py
 
 **Note**: this step assumes you have a DAG that corresponds to the custom plugin. For examples, see [MWAA Code Examples](https://docs.aws.amazon.com/mwaa/latest/userguide/sample-code.html).
 
+#### Startup script
+
+- There is a sample shell script `startup.sh` located in a directory at the root of this repository called `startup_script`.
+- If there is a need to run additional setup (e.g. install system libraries, setting up environment variables), please modify the `startup.sh` script.
+- To test a `startup.sh` without running Apache Airflow, use the following script:
+
+```bash
+./mwaa-local-env test-startup-script
+```
+
 ## What's next?
 
 - Learn how to upload the requirements.txt file to your Amazon S3 bucket in [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html).

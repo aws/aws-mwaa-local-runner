@@ -25,12 +25,18 @@ ENV PYTHON_VERSION=3.10.9
 COPY script/bootstrap.sh /bootstrap.sh
 COPY script/systemlibs.sh /systemlibs.sh
 COPY script/generate_key.sh /generate_key.sh
+COPY script/run-startup.sh /run-startup.sh
+COPY script/shell-launch-script.sh /shell-launch-script.sh
+COPY script/verification.sh /verification.sh
 COPY config/constraints.txt /constraints.txt
 COPY config/mwaa-base-providers-requirements.txt /mwaa-base-providers-requirements.txt
 
 RUN chmod u+x /systemlibs.sh && /systemlibs.sh
 RUN chmod u+x /bootstrap.sh && /bootstrap.sh
 RUN chmod u+x /generate_key.sh && /generate_key.sh
+RUN chmod u+x /run-startup.sh
+RUN chmod u+x /shell-launch-script.sh
+RUN chmod u+x /verification.sh
 
 # Post bootstrap to avoid expensive docker rebuilds
 COPY script/entrypoint.sh /entrypoint.sh

@@ -9,6 +9,8 @@ yum install -y shadow-utils
 adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 yum install -y sudo
 
+echo 'airflow ALL=(ALL)NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
+
 yum erase openssl-devel -y
 yum install openssl11 openssl11-devel libffi-devel bzip2-devel wget tar xz -y
 # Install python optional standard libary module dependencies 

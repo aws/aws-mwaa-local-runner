@@ -64,14 +64,12 @@ wait_for_port() {
 
 execute_startup_script() {
   # Execute customer provided shell script
-  if [[ -e "$AIRFLOW_HOME/startup/startup.sh" ]]
-   then
-     bash /shell-launch-script.sh
-     source stored_env
-     export AIRFLOW_HOME="/usr/local/airflow"
-     export AIRFLOW__CORE__EXECUTOR="SequentialExecutor"
-     export AIRFLOW__CORE__LOAD_EXAMPLES="False"
-     cd "$AIRFLOW_HOME"
+  if [[ -e "$AIRFLOW_HOME/startup/startup.sh" ]]; then
+    bash /shell-launch-script.sh
+    source stored_env
+    export AIRFLOW_HOME="/usr/local/airflow"
+    export AIRFLOW__CORE__LOAD_EXAMPLES="False"
+    cd "$AIRFLOW_HOME"
   else
     echo "No startup script found, skipping execution."
   fi
@@ -124,9 +122,14 @@ case "$1" in
       echo "Downloading $S3_REQUIREMENTS_PATH"
       mkdir -p $AIRFLOW_HOME/requirements
       aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
-    fi        
-    install_requirements
+    fi
+
     execute_startup_script
+    source stored_env
+    export AIRFLOW_HOME="/usr/local/airflow"
+    export AIRFLOW__CORE__LOAD_EXAMPLES="False"
+
+    install_requirements
     airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.

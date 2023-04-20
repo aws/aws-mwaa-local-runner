@@ -15,7 +15,7 @@ echo 'airflow ALL=(ALL)NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
 yum install -y python37 gcc gcc-g++ python3-devel python3-wheel
 
 # Upgrade pip
-sudo -u airflow pip3 install $PIP_OPTION --upgrade pip
+sudo -u airflow pip3 install $PIP_OPTION --upgrade 'pip<23'
 
 # openjdk is required for JDBC to work with Airflow
 yum install -y java-1.8.0-openjdk

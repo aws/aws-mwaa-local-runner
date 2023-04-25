@@ -1,6 +1,12 @@
 #!/bin/sh
 
 set -e
+
+# increase timeout to address build issues referenced in
+# https://github.com/aws/aws-mwaa-local-runner/issues/7
+# https://github.com/aws/aws-mwaa-local-runner/issues/141
+sed -i "s/timeout=5/timeout=10/g" /etc/yum.conf
+
 yum update -y
 
 # install basic python environment

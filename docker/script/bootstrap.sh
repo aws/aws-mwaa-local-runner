@@ -3,14 +3,17 @@
 set -e
 
 # Upgrade pip version to latest
-python3 -m pip install --upgrade pip
+# python3 -m pip install --upgrade pip
 
 # Install wheel to avoid legacy setup.py install
 pip3 install wheel
 
+# Needed for generating fernet key for local runner
+pip3 install cryptography
+
 # On RHL and Centos based linux, openssl needs to be set as Python Curl SSL library
 export PYCURL_SSL_LIBRARY=openssl
-pip3 install --upgrade pip
+
 pip3 install $PIP_OPTION --compile pycurl
 pip3 install $PIP_OPTION celery[sqs]
 
@@ -43,7 +46,7 @@ pip3 install --constraint /constraints.txt apache-airflow-providers-amazon
 
 # Use symbolic link to ensure Airflow 2.0's backport packages are in the same namespace as Airflow itself
 # see https://airflow.apache.org/docs/apache-airflow/stable/backport-providers.html#troubleshooting-installing-backport-packages
-ln -s /usr/local/airflow/.local/lib/python3.7/site-packages/airflow/providers /usr/local/lib/python3.7/site-packages/airflow/providers
+ln -s /usr/local/airflow/.local/lib/python3.9/site-packages/airflow/providers /usr/local/lib/python3.9/site-packages/airflow/providers
 
 # install awscli v2, according to https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html#cliv2-linux-install
 zip_file="awscliv2.zip"

@@ -4,13 +4,13 @@ set -e
 yum update -y
 
 # install basic python environment
-yum install -y python37 gcc gcc-g++ python3-devel
+yum install -y python39 python3-pip python3-setuptools gcc gcc-g++ python3-devel
 
 # JDBC and PyODBC dependencies
-yum install -y java-1.8.0-openjdk unixODBC-devel 
+yum install -y java-1.8.0-amazon-corretto-devel unixODBC-devel 
 
 # Database clients
-yum install -y mariadb-devel postgresql-devel
+yum install -y postgresql-devel
 
 # Archiving Libraries
 yum install -y zip unzip bzip2 gzip
@@ -26,8 +26,6 @@ yum install -y jq
 # nc is used to check DB connectivity
 yum install -y nc
 
-# Needed for generating fernet key for local runner
-yum install -y python2-cryptography
 
 # Needed to forward App Domain related ports: 31337, 31338
 yum -y install socat

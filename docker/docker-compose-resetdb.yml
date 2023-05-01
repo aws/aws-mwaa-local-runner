@@ -11,7 +11,7 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - "${PWD}/db-data:/var/lib/postgresql/data"
+            - "postgres_data:/var/lib/postgresql/data"
 
     resetdb:
         image: amazon/mwaa-local:2_5

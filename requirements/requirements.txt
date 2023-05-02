@@ -2,3 +2,5 @@
 
 apache-airflow-providers-snowflake==4.0.2
 apache-airflow-providers-mysql==4.0.0
+
+/usr/local/airflow/plugins/airflow-0.0.0-py3-none-any.whl

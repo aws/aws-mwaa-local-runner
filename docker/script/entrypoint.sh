@@ -31,7 +31,7 @@ install_requirements() {
           fi
       fi    
         echo "Installing requirements.txt"
-        pip3 install --user -r "$AIRFLOW_HOME/$REQUIREMENTS_FILE"
+        pip3 install --user -r "$AIRFLOW_HOME/$REQUIREMENTS_FILE" --force-reinstall
     fi
 }
 
@@ -131,13 +131,17 @@ case "$1" in
     export AIRFLOW__CORE__LOAD_EXAMPLES="False"
 
     install_requirements
+    # Forward ports for App Domain. 192.168.5.2 is the host system IP. This should be host.lima.internal, but that DNS
+    # entry is currently broken. The IP should be static however.
+    socat TCP4-LISTEN:31337,fork,reuseaddr TCP4:192.168.5.2:31337 &
+    socat TCP4-LISTEN:31338,fork,reuseaddr TCP4:192.168.5.2:31338 &
     airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.
       airflow scheduler &
       sleep 2
     fi
-    airflow users create -r Admin -u admin -e admin@example.com -f admin -l user -p $DEFAULT_PASSWORD
+
     exec airflow webserver
     ;;
   resetdb)

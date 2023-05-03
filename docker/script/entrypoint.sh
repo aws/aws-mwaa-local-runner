@@ -151,7 +151,8 @@ case "$1" in
       echo "Downloading $S3_REQUIREMENTS_PATH"
       mkdir -p $AIRFLOW_HOME/requirements
       aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
-    fi      
+    fi
+    execute_startup_script      
     install_requirements
     ;;
   package-requirements)
@@ -160,7 +161,8 @@ case "$1" in
       echo "Downloading $S3_REQUIREMENTS_PATH"
       mkdir -p $AIRFLOW_HOME/requirements
       aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
-    fi      
+    fi
+    execute_startup_script      
     package_requirements
     ;;
   test-startup-script)

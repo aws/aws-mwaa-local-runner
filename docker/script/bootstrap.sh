@@ -34,8 +34,9 @@ pushd /python_install/$python_file
 make install -j $(nproc) # use -j to set the cores for the build
 popd
 
-# Upgrade pip
+# Upgrade pip & pip dependencies
 pip3 install $PIP_OPTION --upgrade pip
+python3 -m pip install $PIP_OPTION --upgrade setuptools wheel
 
 # openjdk is required for JDBC to work with Airflow
 yum install -y java-1.8.0-openjdk

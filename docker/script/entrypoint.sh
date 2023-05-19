@@ -23,6 +23,13 @@ export \
 install_requirements() {
     # Install custom python package if requirements.txt is present
     if [[ -e "$AIRFLOW_HOME/$REQUIREMENTS_FILE" ]]; then
+      if ! grep -- "-c " "$AIRFLOW_HOME/$REQUIREMENTS_FILE"
+      then
+          if ! grep -- "--constraint " "$AIRFLOW_HOME/$REQUIREMENTS_FILE"
+          then
+              echo "WARNING: Constraints should be specified for requirements.txt. Please see https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html#working-dags-dependencies-test-create"
+          fi
+      fi    
         echo "Installing requirements.txt"
         pip3 install --user -r "$AIRFLOW_HOME/$REQUIREMENTS_FILE"
     fi
@@ -53,6 +60,19 @@ wait_for_port() {
     echo "$(date) - waiting for $name... $j/$TRY_LOOP"
     sleep 5
   done
+}
+
+execute_startup_script() {
+  # Execute customer provided shell script
+  if [[ -e "$AIRFLOW_HOME/startup/startup.sh" ]]; then
+    bash /shell-launch-script.sh
+    source stored_env
+    export AIRFLOW_HOME="/usr/local/airflow"
+    export AIRFLOW__CORE__LOAD_EXAMPLES="False"
+    cd "$AIRFLOW_HOME"
+  else
+    echo "No startup script found, skipping execution."
+  fi
 }
 
 # Other executors than SequentialExecutor drive the need for an SQL database, here PostgreSQL is used
@@ -103,7 +123,13 @@ case "$1" in
       echo "Downloading $S3_REQUIREMENTS_PATH"
       mkdir -p $AIRFLOW_HOME/requirements
       aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
-    fi        
+    fi
+
+    execute_startup_script
+    source stored_env
+    export AIRFLOW_HOME="/usr/local/airflow"
+    export AIRFLOW__CORE__LOAD_EXAMPLES="False"
+
     install_requirements
     airflow db init
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
@@ -136,7 +162,10 @@ case "$1" in
       aws s3 cp $S3_REQUIREMENTS_PATH $AIRFLOW_HOME/$REQUIREMENTS_FILE
     fi      
     package_requirements
-    ;;    
+    ;;
+  test-startup-script)
+    execute_startup_script
+    ;;
   *)
     # The command is something like bash, not an airflow subcommand. Just run it in the right environment.
     exec "$@"

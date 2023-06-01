@@ -11,25 +11,25 @@ pip3 install wheel
 # On RHL and Centos based linux, openssl needs to be set as Python Curl SSL library
 export PYCURL_SSL_LIBRARY=openssl
 pip3 install $PIP_OPTION --compile pycurl
-pip3 install $PIP_OPTION celery[sqs]
+pip3 install $PIP_OPTION --constraint /constraints.txt celery[sqs]
 
 # install postgres python client
-pip3 install $PIP_OPTION psycopg2
+pip3 install $PIP_OPTION --constraint /constraints.txt psycopg2
 
 # install minimal Airflow packages
 pip3 install $PIP_OPTION --constraint /constraints.txt apache-airflow[crypto,celery,statsd"${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}"]=="${AIRFLOW_VERSION}"
 
 # install additional python dependencies
-if [ -n "${PYTHON_DEPS}" ]; then pip3 install $PIP_OPTION "${PYTHON_DEPS}"; fi
+if [ -n "${PYTHON_DEPS}" ]; then pip3 install --constraint /constraints.txt $PIP_OPTION "${PYTHON_DEPS}"; fi
 
 # install adduser and add the airflow user
 adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
 
 # install watchtower for Cloudwatch logging
-pip3 install $PIP_OPTION watchtower==1.0.1
+pip3 install $PIP_OPTION --constraint /constraints.txt watchtower
 
 # Install default providers
-pip3 install apache-airflow-providers-amazon
+pip3 install --constraint /constraints.txt apache-airflow-providers-amazon
 
 # Use symbolic link to ensure Airflow 2.0's backport packages are in the same namespace as Airflow itself
 # see https://airflow.apache.org/docs/apache-airflow/stable/backport-providers.html#troubleshooting-installing-backport-packages

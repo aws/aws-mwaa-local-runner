@@ -1,0 +1,20 @@
+# Build MWAA 2.0.2 local image.
+./mwaa-local-env build-image
+
+# Generate MWAA dependencies freeze.
+docker run --rm -it amazon/mwaa-local:2.0 bash
+pip freeze
+
+# Generate data-platform-kit dependency set.
+python3.7 -m venv mwaa-env
+source mwaa-env/bin/activate
+
+pip install --no-deps -r mwaa_freeze.txt
+
+
+download https://github.com/Glovo/central-data-mesh/blob/main/config/pipelines/requirements.txt -> name this `requirements_central.txt`
+
+pip install -r requirements_central.txt
+pip freeze > dp_kit_freeze.txt
+
+grep -v -x -f mwaa_freeze.txt dp_kit_freeze.txt > deps_subset.txt

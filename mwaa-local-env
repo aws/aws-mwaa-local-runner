@@ -15,6 +15,7 @@ display_help() {
    echo "build-image            Build Image Locally"
    echo "reset-db               Reset local PostgresDB container."
    echo "start                  Start Airflow local environment. (LocalExecutor, Using postgres DB)"
+   echo "cli                    Airflow cli for running local environment."
    echo "test-requirements      Install requirements on an ephemeral instance of the container."
    echo "package-requirements   Download requirements WHL files into plugins folder."
    echo "test-startup-script    Execute shell script on an ephemeral instance of the container."
@@ -98,6 +99,9 @@ reset-db)
    ;;
 start)
    docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
+   ;;
+cli)
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml exec -it local-runner /entrypoint.sh airflow ${@:2}
    ;;
 help)
    display_help

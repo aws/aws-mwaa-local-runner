@@ -15,7 +15,6 @@ services:
 
     local-runner:
         image: amazon/mwaa-local:2_5
-        restart: always
         depends_on:
             - postgres
         environment:

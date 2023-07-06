@@ -23,6 +23,9 @@ yum install -y gcc gcc-c++ cyrus-sasl-devel python3-devel python3-wheel make
 # install sqlite to avoid local-runner Airflow error messages
 yum install -y sqlite-devel
 
+# install libxml2 and dev versions
+sudo yum install -y libxml2-devel libxslt-devel libxml2 libxslt
+
 # Python 3.10 install
 sudo mkdir python_install
 python_file=Python-$PYTHON_VERSION

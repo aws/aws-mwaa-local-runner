@@ -31,6 +31,7 @@ COPY script/verification.sh /verification.sh
 COPY config/constraints.txt /constraints.txt
 COPY config/mwaa-base-providers-requirements.txt /mwaa-base-providers-requirements.txt
 
+RUN yum install -y libxml2-devel libxslt-devel
 RUN chmod u+x /systemlibs.sh && /systemlibs.sh
 RUN chmod u+x /bootstrap.sh && /bootstrap.sh
 RUN chmod u+x /generate_key.sh && /generate_key.sh

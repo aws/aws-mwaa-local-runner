@@ -3,7 +3,7 @@
 # DESCRIPTION: Amazon MWAA Local Dev Environment
 # BUILD: docker build --rm -t amazon/mwaa-local .
 
-FROM amazonlinux:2
+FROM amazonlinux:2.0.20230307.0
 LABEL maintainer="amazon"
 
 # Airflow
@@ -45,6 +45,15 @@ COPY config/webserver_config.py ${AIRFLOW_USER_HOME}/webserver_config.py
 
 RUN chown -R airflow: ${AIRFLOW_USER_HOME}
 RUN chmod +x /entrypoint.sh
+
+RUN wget https://sqlite.org/2023/sqlite-autoconf-3410100.tar.gz
+RUN tar -xvf sqlite-autoconf-3410100.tar.gz
+WORKDIR sqlite-autoconf-3410100
+RUN ./configure
+RUN make clean && make -j 20 && make install
+WORKDIR ..
+ENV LD_LIBRARY_PATH="/usr/local/lib"
+RUN source /etc/profile
 
 EXPOSE 8080 5555 8793
 

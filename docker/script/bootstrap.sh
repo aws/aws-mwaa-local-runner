@@ -4,6 +4,7 @@ set -e
 
 # On RHL and Centos based linux, openssl needs to be set as Python Curl SSL library
 export PYCURL_SSL_LIBRARY=openssl
+pip3 install --upgrade pip
 pip3 install $PIP_OPTION --compile pycurl
 pip3 install $PIP_OPTION celery[sqs]
 

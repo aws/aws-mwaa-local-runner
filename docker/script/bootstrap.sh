@@ -105,7 +105,12 @@ yum install -y zip unzip bzip2 gzip # tar
 # install awscli v2
 zip_file="awscliv2.zip"
 cd /tmp
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o $zip_file
+if [ $(uname -p) = "aarch64" ]
+then
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o $zip_file
+else
+  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o $zip_file
+fi
 unzip $zip_file
 ./aws/install
 rm $zip_file

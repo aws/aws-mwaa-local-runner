@@ -26,10 +26,10 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - "${PWD}/dags:/usr/local/airflow/dags"
-            - "${PWD}/plugins:/usr/local/airflow/plugins"
-            - "${PWD}/requirements:/usr/local/airflow/requirements"
-            - "${PWD}/startup_script:/usr/local/airflow/startup"
+            - "${DAGS_HOME}:/usr/local/airflow/dags"
+            - "${PLUGINS_HOME}:/usr/local/airflow/plugins"
+            - "${REQS_HOME}:/usr/local/airflow/requirements"
+            - "${STARTUP_HOME}:/usr/local/airflow/startup"
         ports:
             - "8080:8080"
         command: local-runner

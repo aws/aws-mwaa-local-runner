@@ -1,4 +1,3 @@
---constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.5.1/constraints-3.10.txt"
+# --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.5.1/constraints-3.10.txt"
 
-apache-airflow-providers-snowflake==4.0.2
-apache-airflow-providers-mysql==4.0.0
+/usr/local/airflow/plugins/demo_airflow-0.0.0-py3-none-any.whl

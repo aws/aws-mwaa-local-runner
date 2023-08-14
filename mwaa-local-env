@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AIRFLOW_VERSION=2_5
+AIRFLOW_VERSION=2_6
 DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
 
 display_help() {

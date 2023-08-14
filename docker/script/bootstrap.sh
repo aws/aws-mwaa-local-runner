@@ -66,12 +66,12 @@ fi
 # install mariadb_devel and its dependencies
 sudo rpm -ivh /mariadb_rpm/*
 
-# install minimal Airflow packages
 sudo -u airflow pip3 install $PIP_OPTION --no-use-pep517 --constraint /constraints.txt poetry
 sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt cached-property
 sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt wheel 
 sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt --use-deprecated legacy-resolver apache-airflow[celery,statsd"${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}"]=="${AIRFLOW_VERSION}"
 
+ yum install -y libxml2-devel libxslt-devel
 # install celery[sqs] and its dependencies
 yum install -y libcurl-devel 
 # see https://stackoverflow.com/questions/49200056/pycurl-import-error-ssl-backend-mismatch

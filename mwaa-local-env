@@ -2,6 +2,7 @@
 
 AIRFLOW_VERSION=2_2
 DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
+DOCKER_PLATFORM="linux/amd64"
 
 display_help() {
    # Display Help
@@ -53,7 +54,7 @@ validate_prereqs() {
 }
 
 build_image() {
-   docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
+   docker build --rm --platform $DOCKER_PLATFORM --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
 }
 
 case "$1" in
@@ -68,7 +69,7 @@ test-requirements)
      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
      build_image
    fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
+   docker run --platform $DOCKER_PLATFORM -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
    ;;
 test-startup-script)
    BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
@@ -78,7 +79,7 @@ test-startup-script)
       echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
       build_image
    fi
-   docker run -v $(pwd)/startup_script:/usr/local/airflow/startup -it amazon/mwaa-local:$AIRFLOW_VERSION test-startup-script
+   docker run --platform $DOCKER_PLATFORM -v $(pwd)/startup_script:/usr/local/airflow/startup -it amazon/mwaa-local:$AIRFLOW_VERSION test-startup-script
    ;;
 package-requirements)
    BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
@@ -88,7 +89,7 @@ package-requirements)
      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
      build_image
    fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
+   docker run --platform $DOCKER_PLATFORM -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
    ;;   
 build-image)
    build_image

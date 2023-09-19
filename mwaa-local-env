@@ -53,7 +53,7 @@ validate_prereqs() {
 }
 
 build_image() {
-   docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
+   docker build --rm --platform linux/amd64 --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
 }
 
 case "$1" in

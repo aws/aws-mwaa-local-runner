@@ -1,0 +1,83 @@
+{
+      "professional_background_word_count": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 1368
+            }
+      },
+      "applied_for_scholarship": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 1
+            }
+      },
+      "technical_background_word_count": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 1149
+            }
+      },
+      "lower_i": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 1
+            }
+      },
+      "ten_minute_chat": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 1
+            }
+      },
+      "downloaded_outcomes": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 1
+            }
+      },
+      "free_resources_mentioned": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 5
+            }
+      },
+      "coding_languages_mentioned": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 22
+            }
+      },
+      "similarity": {
+            "nulls": {
+                  "fill": false
+            },
+            "range": {
+                  "min": 0,
+                  "max": 1
+            }
+      }
+}

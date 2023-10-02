@@ -1,0 +1,79 @@
+{
+      "application_discipline": {
+            "values": [
+                  "Software Engineering",
+                  "Cybersecurity Engineering",
+                  "Not sure",
+                  "Data Science",
+                  "Product Design",
+                  "Cybersecurity Analytics"
+            ],
+            "nulls": {
+                  "fill": false
+            }
+      },
+      "application_pacing": {
+            "values": [
+                  "Not Sure",
+                  "Flex",
+                  "Live"
+            ],
+            "nulls": {
+                  "fill": false
+            }
+      },
+      "application_referral_source": {
+            "values": [
+                  "Online Search",
+                  "Friends and Family",
+                  "Events",
+                  "Social Media",
+                  "Review Site",
+                  "Direct Mail",
+                  "Press",
+                  "Outdoor Ad",
+                  "Radio",
+                  "Online Search\nSocial Media",
+                  "Friends and Family\nOnline Search",
+                  "Review Site\nSocial Media",
+                  "Online Search\nReview Site\nSocial Media"
+            ],
+            "nulls": {
+                  "fill": false
+            }
+      },
+      "education": {
+            "values": [
+                  "High School or GED",
+                  "College",
+                  "Post-Graduate School",
+                  "Graduate School"
+            ],
+            "nulls": {
+                  "fill": false
+            }
+      },
+      "paid_non_paid": {
+            "values": [
+                  "PAID",
+                  "NULL",
+                  "NON_PAID"
+            ],
+            "nulls": {
+                  "fill": true
+            }
+      },
+      "professional_goal": {
+            "values": [
+                  "Change my career",
+                  "Begin my professional career",
+                  "Advance in my current career",
+                  "Other",
+                  "Start a company",
+                  "Rejoin the workforce"
+            ],
+            "nulls": {
+                  "fill": false
+            }
+      }
+}

@@ -19,6 +19,7 @@ display_help() {
    echo "package-requirements   Download requirements WHL files into plugins folder."
    echo "test-startup-script    Execute shell script on an ephemeral instance of the container."
    echo "validate-prereqs       Validate pre-reqs installed (docker, docker-compose, python3, pip3)"
+   echo "shell                  Open a Python Shell with airflow aligned import paths."
    echo
 }
 
@@ -56,6 +57,13 @@ build_image() {
    docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
 }
 
+RESET=false
+case "$2" in
+-r)
+   RESET=true
+   ;;
+esac
+
 case "$1" in
 validate-prereqs)
    validate_prereqs
@@ -91,6 +99,10 @@ package-requirements)
    docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
    ;;   
 build-image)
+   if $RESET; then
+   docker rmi --force $(docker images | grep 'amazon/mwaa-local')
+   docker volume prune 
+   fi
    build_image
    ;;
 reset-db)
@@ -98,6 +110,9 @@ reset-db)
    ;;
 start)
    docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
+   ;;
+shell)
+   ipython -i bin/python_shell.py
    ;;
 help)
    display_help

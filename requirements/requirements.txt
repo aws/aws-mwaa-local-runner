@@ -1,4 +1,14 @@
 --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.10.txt"
 
-apache-airflow-providers-snowflake==4.2.0
-apache-airflow-providers-mysql==5.1.1
+apache-airflow-providers-ssh
+apache-airflow-providers-pagerduty
+gspread
+oauth2client
+simple-salesforce
+apache-airflow-providers-google
+virtualenv
+eventbrite
+discord.py
+scikit-learn
+prophet
+

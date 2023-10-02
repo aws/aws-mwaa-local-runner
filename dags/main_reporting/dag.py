@@ -2,6 +2,7 @@ from datetime import datetime
 
 from shared.dag_factory import create_dag
 
+from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 from shared.irontable import Irontable
@@ -394,6 +395,15 @@ funnel_activity = Irontable(schema=reporting_schema,
                                 "stitch_salesforce.account"
                             ])
 
+required_phase_repeats = Irontable(
+    schema=reporting_schema,
+    table="required_phase_repeats",
+    dag_dependencies=[
+        students,
+        rosters
+    ]
+)
+
 dag_dict = {
     "cohorts": cohorts.to_dict(),
     "grades": grades.to_dict(),
@@ -418,14 +428,15 @@ dag_dict = {
     "stripe_transactions": stripe_transactions.to_dict(),
     "students": students.to_dict(
         non_most_recent=non_most_recent,
-        roster_columns=rosters.query_column_names()
         ),
     "alumni": alumni.to_dict(),
     "daily_active_rosters": daily_active_rosters.to_dict(),
     "admissions_assessment": admissions_assessment.to_dict(),
     "rep_activities": rep_activities.to_dict(),
-    "funnel_activity": funnel_activity.to_dict()
+    "funnel_activity": funnel_activity.to_dict(),
+    "required_phase_repeats": required_phase_repeats.to_dict(),
 }
+
 
 for table, table_params in dag_dict.items():
     sql = f"{table}.sql"
@@ -441,6 +452,19 @@ for table, table_params in dag_dict.items():
 
     for dag_dep in dag_dict[table]["dag_dependencies"]:
         dag_dict[dag_dep]["operator"] >> table_op
-
+    
     table_params["operator"] = table_op
+
+def query_roster_columns(irontable, ti):
+    columns = irontable.query_column_names()
+    ti.xcom_push(key="columns", value=columns)
+
+roster_columns = PythonOperator(
+    dag=dag,
+    task_id="query_roster_columns",
+    python_callable=query_roster_columns,
+    op_kwargs={"irontable": rosters}
+)
+
+dag_dict["rosters"]["operator"] >> roster_columns >> dag_dict["students"]["operator"]
 

@@ -78,8 +78,9 @@ with create_dag(**DAG_CONFIG) as dag:
         failed_states=['failed', 'skipped'],
         # Per docs, "For yesterday, use [positive!] datetime.timedelta(days=1)"
         # This runs at 8:30am local (aka 7:30am execution_date),
-        # so, we need to look forward 1 hour
-        execution_delta=timedelta(hours=-1)
+        # so, we need to look forward 1 hour. We also need to look back one day
+        # since main_reporting is a daily dag (i.e. scheduled the day before)
+        execution_delta=timedelta(days=1, hours=-1)
     )
 
     email_events >> branch_task >> [weekly_tasks, daily_tasks, hourly_tasks]

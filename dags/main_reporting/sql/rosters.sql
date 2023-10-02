@@ -110,6 +110,7 @@ SELECT
     , opportunities.stagename AS stage_name
     , opportunities.pause_start_date__c AS sf_pause_start_date
     , opportunities.pause_end_date__c AS sf_pause_end_date
+    , opportunities.days_since_last_activity__c days_since_onboarding_activity
 FROM
     {{ params.table_refs["registrar.admissions"] }} admissions
 JOIN

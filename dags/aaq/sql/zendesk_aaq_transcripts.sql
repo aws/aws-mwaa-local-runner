@@ -26,10 +26,10 @@ messages AS (
         , tc.id AS ticket_comment_id 
         , tc.created_at AS ticket_comment_created_at
         , n.n::INT AS message_order
-        , NULLIF(REGEXP_INSTR(body, '\\(\\d{1,2}:\\d{2}:\\d{2} \\w{2}\\) ', 1, n.n::INT, 0), 0) AS n_0
-        , NVL(NULLIF(REGEXP_INSTR(body, '\\(\\d{1,2}:\\d{2}:\\d{2} \\w{2}\\) ', 1, n.n::INT + 1, 0), 0), LEN(body) + 1) AS n_1
+        , NULLIF(REGEXP_INSTR(body, '\\(\\d{1,2}:\\d{2}:\\d{2}.\\w{2}\\)\\s', 1, n.n::INT, 0), 0) AS n_0
+        , NVL(NULLIF(REGEXP_INSTR(body, '\\(\\d{1,2}:\\d{2}:\\d{2}.\\w{2}\\)\\s', 1, n.n::INT + 1, 0), 0), LEN(body) + 1) AS n_1
         , SUBSTRING(body, n_0-1, n_1 - n_0) AS message_body
-        , CAST(REGEXP_SUBSTR(message_body, '(\\d{1,2}:\\d{2}:\\d{2} \\w{2})', 1, 1, 'e') AS TIME) AS message_time
+        , CAST(REGEXP_SUBSTR(message_body, '(\\d{1,2}:\\d{2}:\\d{2})',1,1,'e')||' '||REGEXP_SUBSTR(message_body, '\\d{1,2}:\\d{2}:\\d{2}.(AM|PM)',1,1,'e') AS TIME) AS message_time
     FROM 
         numbers AS n,
         zendesk.ticket_comments AS tc
@@ -50,7 +50,7 @@ SELECT
             ELSE ticket_comment_created_at::DATE 
             END || ' ' || message_time AS TIMESTAMP)
         ) AS message_timestamp
-    , SUBSTRING(message_body, 15, LEN(message_body)) AS message_text
+    , TRIM(SUBSTRING(message_body, CHARINDEX(')', message_body)+1)) AS message_text
     , SUBSTRING(message_text, 1, NULLIF(CHARINDEX(':', message_text), 0) - 1) AS author_alias
     , MAX(SUBSTRING(message_text, 5, NULLIF(CHARINDEX('joined the chat', message_text), 0) - 6)) OVER (PARTITION BY ticket_id) != author_alias AS is_tc
 FROM messages

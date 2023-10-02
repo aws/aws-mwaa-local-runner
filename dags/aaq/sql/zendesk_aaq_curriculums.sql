@@ -4,18 +4,6 @@ SELECT
     t.ticket_id
     , t.content_url
     , CASE 
-        WHEN a.subaccount1 NOT IN ('Live', 'Flex') THEN a.subaccount1
-        END AS campus
-	, a.subaccount2 AS discipline
-	, CASE 
-        WHEN a.subaccount3 IN ('Full Time', 'Part Time', 'Self Paced') THEN a.subaccount3
-        END AS pacing
-    , CASE
-        WHEN a.subaccount1 = 'Online' THEN 'Online'
-        WHEN a.subaccount1 IN ('Live', 'Flex') THEN a.subaccount1
-        WHEN a.subaccount1 IS NOT NULL THEN 'Campus'
-        END AS modality
-    , CASE 
         WHEN t.canvas_course_id IS NOT NULL THEN 'Canvas'
         END AS lms_name
     , t.canvas_course_id AS course_id
@@ -38,7 +26,4 @@ LEFT JOIN
 LEFT JOIN 
     canvas.module_item_dim mi
     ON t.canvas_module_item_id = mi.canvas_id
-LEFT JOIN 
-    canvas.account_dim a 
-    ON c.account_id = a.id 
 {% endblock %}

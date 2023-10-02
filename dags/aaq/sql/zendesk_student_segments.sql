@@ -1,7 +1,7 @@
 {% extends "rotate_table.sql" %}
 {% block query %}
 select
-    tf.ticket_id
+    zt.id AS ticket_id
     , zt.created_at
     , s.learn_uuid
     , s.matriculation_date
@@ -27,10 +27,10 @@ select
         WHEN zt.created_at > a.withdrawal_date THEN 'Withdrawn'
         END AS graduate_segment
 FROM {{ params.table_refs["zendesk_tickets"] }} zt
-JOIN {{ params.table_refs["zendesk_ss_ticket_forms"] }} tf 
+LEFT JOIN {{ params.table_refs["zendesk_ss_ticket_forms"] }} tf 
     ON zt.id = tf.ticket_id
 LEFT JOIN {{ params.table_refs["fis.students"] }} s
-    ON tf.student_email = s.email
+    ON zt.submitter_email = s.email
 LEFT JOIN {{ params.table_refs["fis.rosters"] }} r 
     ON s.learn_uuid = r.learn_uuid
     AND zt.created_at BETWEEN r.added_to_cohort_date AND NVL(r.removed_from_cohort_date, CURRENT_TIMESTAMP)

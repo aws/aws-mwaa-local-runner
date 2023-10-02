@@ -133,7 +133,8 @@ SELECT
     , matriculated.on_roster_day_15 AS on_roster_day_15
 
     -- Most recent cohort
-    {% for column in params.roster_columns %}
+    {% set roster_columns = ti.xcom_pull(task_ids=["query_roster_columns"], key="columns")[0] %}
+    {% for column in roster_columns %}
         {% if column in params.non_most_recent %}
             {% if params.non_most_recent[column].get("sql") %}
             , {{ params.non_most_recent[column]["sql"] }}

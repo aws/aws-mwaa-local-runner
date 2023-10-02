@@ -74,6 +74,7 @@ combined_aaq_tickets = Irontable(schema="fis",
                                      zendesk_tickets,
                                      zendesk_aaq_facts,
                                      zendesk_aaq_curriculums,
+                                     zendesk_student_segments
                                  ])
 
 combined_aaq_transcripts = Irontable(schema="fis",

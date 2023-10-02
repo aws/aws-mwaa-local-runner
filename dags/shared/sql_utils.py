@@ -2,6 +2,8 @@ from jinja2 import Environment, FileSystemLoader
 import logging
 import psycopg2
 import re
+import io
+import csv
 
 from shared.irondata import Irondata
 from shared.s3 import read_csv_header
@@ -14,8 +16,8 @@ DYNAMIC_TBL_TEMPL_FILENAME = "reset_dynamic_table.sql"
 def reset_dynamic_table(ds, **context):
     bucket_name = context['bucket_name']
     object_key = context['object_key']
-
-    cols = read_csv_header(bucket_name, object_key).split(",")
+    buf = io.StringIO(read_csv_header(bucket_name, object_key))
+    cols = list(csv.reader(buf))[0]
     col_list = sqlize_names(cols)
     quoted_col_list = quote_columns(col_list)
 

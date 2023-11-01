@@ -5,3 +5,7 @@ dags/**/*.pyc
 /logs
 /db-data
 .DS_Store
+plugins/
+docker/config/.env.localrunner
+.venv/
+requirements/plugins.zip

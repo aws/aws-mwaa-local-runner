@@ -1,3 +1,5 @@
+--find-links /usr/local/airflow/plugins
+--no-index
 --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.6.3/constraints-3.10.txt"
 
 apache-airflow-providers-snowflake==4.2.0

@@ -4,26 +4,23 @@ set -e
 set -x
 
 # install adduser and add the airflow user
-yum update -y
-yum install -y shadow-utils
+dnf update -y
+dnf install -y shadow-utils
 adduser -s /bin/bash -d "${AIRFLOW_USER_HOME}" airflow
-yum install -y sudo
+dnf install -y sudo
 
 echo 'airflow ALL=(ALL)NOPASSWD:ALL' | sudo EDITOR='tee -a' visudo
 
-yum erase openssl-devel -y
-yum install openssl11 openssl11-devel libffi-devel bzip2-devel wget tar xz -y
+dnf erase openssl-devel -y
+dnf install openssl openssl-devel libffi-devel sqlite-devel bzip2-devel wget tar xz -y
 # Install python optional standard libary module dependencies 
-yum install ncurses-devel gdbm-devel readline-devel xz-libs xz-devel uuid-devel libuuid-devel -y 
-yum install glibc -y
+dnf install ncurses-devel gdbm-devel readline-devel xz-libs xz-devel uuid-devel libuuid-devel -y 
+dnf install glibc -y
 
 # install system dependency to enable the installation of most Airflow extras
-yum install -y gcc gcc-c++ cyrus-sasl-devel python3-devel python3-wheel make
+dnf install -y gcc gcc-c++ cyrus-sasl-devel python3-devel python3-wheel make
 
-# install sqlite to avoid local-runner Airflow error messages
-yum install -y sqlite-devel
-
-# Python 3.10 install
+# Python 3.11 install
 sudo mkdir python_install
 python_file=Python-$PYTHON_VERSION
 python_tar=$python_file.tar
@@ -34,8 +31,12 @@ cp /python_source/$python_xz /python_install/$python_xz
 unxz ./python_install/$python_xz
 tar -xf ./python_install/$python_tar -C ./python_install
 
+dnf install -y dnf-plugins-core
+dnf builddep -y python3
+
+
 pushd /python_install/$python_file 
-./configure --enable-optimizations --enable-loadable-sqlite-extensions --prefix=/usr ## Override the install at /usr/bin/python3
+./configure 
 make install -j $(nproc) # use -j to set the cores for the build
 popd
 
@@ -43,7 +44,7 @@ popd
 pip3 install $PIP_OPTION --upgrade 'pip<23'
 
 # openjdk is required for JDBC to work with Airflow
-yum install -y java-1.8.0-openjdk
+dnf install -y java-17-amazon-corretto
 
 # Installing mariadb-devel dependency for apache-airflow-providers-mysql.
 # The mariadb-devel provided by AL2 conflicts with openssl11 which is required Python 3.10
@@ -51,17 +52,9 @@ yum install -y java-1.8.0-openjdk
 sudo mkdir mariadb_rpm
 sudo chown airflow /mariadb_rpm
 
-if [[ $(uname -p) == "aarch64" ]]; then
-	wget https://dlm.mariadb.com/2592621/MariaDB/mariadb-10.8.6/yum/rhel7-aarch64/rpms/MariaDB-common-10.8.4-1.el7.centos.aarch64.rpm -P /mariadb_rpm
-	wget https://dlm.mariadb.com/2592615/MariaDB/mariadb-10.8.6/yum/rhel7-aarch64/rpms/MariaDB-compat-10.8.4-1.el7.centos.aarch64.rpm -P /mariadb_rpm
-	wget https://dlm.mariadb.com/2592630/MariaDB/mariadb-10.8.6/yum/rhel7-aarch64/rpms/MariaDB-shared-10.8.4-1.el7.centos.aarch64.rpm -P /mariadb_rpm
-	wget https://dlm.mariadb.com/2592622/MariaDB/mariadb-10.8.6/yum/rhel7-aarch64/rpms/MariaDB-devel-10.8.4-1.el7.centos.aarch64.rpm -P /mariadb_rpm
-else
-	wget https://dlm.mariadb.com/2596575/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-common-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
-	wget https://dlm.mariadb.com/2596577/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-compat-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
-	wget https://dlm.mariadb.com/2596582/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-shared-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
-	wget https://dlm.mariadb.com/2596593/MariaDB/mariadb-10.8.6/yum/rhel7-amd64/rpms/MariaDB-devel-10.8.6-1.el7.centos.x86_64.rpm -P /mariadb_rpm
-fi
+wget https://mirror.mariadb.org/yum/11.1.2/fedora38-amd64/rpms/MariaDB-common-11.1.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
+wget https://mirror.mariadb.org/yum/11.1.2/fedora38-amd64/rpms/MariaDB-shared-11.1.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
+wget https://mirror.mariadb.org/yum/11.1.2/fedora38-amd64/rpms/MariaDB-devel-11.1.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
 
 # install mariadb_devel and its dependencies
 sudo rpm -ivh /mariadb_rpm/*
@@ -71,20 +64,20 @@ sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt cached-pr
 sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt wheel 
 sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt --use-deprecated legacy-resolver apache-airflow[celery,statsd"${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}"]=="${AIRFLOW_VERSION}"
 
- yum install -y libxml2-devel libxslt-devel
+dnf install -y libxml2-devel libxslt-devel
 # install celery[sqs] and its dependencies
-yum install -y libcurl-devel 
+dnf install -y libcurl-devel 
 # see https://stackoverflow.com/questions/49200056/pycurl-import-error-ssl-backend-mismatch
 export PYCURL_SSL_LIBRARY=openssl11
 sudo -u airflow pip3 install $PIP_OPTION --compile pycurl
 sudo -u airflow pip3 install $PIP_OPTION celery[sqs]
 
 # install postgres Python driver and its dependencies
-yum install -y postgresql-devel
+dnf install -y postgresql-devel
 sudo -u airflow pip3 install $PIP_OPTION psycopg2
 
 # install unixODBC-devel to support pyodbc
-yum install -y unixODBC-devel
+dnf install -y unixODBC-devel
 
 # install additional python dependencies
 if [ -n "${PYTHON_DEPS}" ]; then sudo -u airflow pip3 install $PIP_OPTION "${PYTHON_DEPS}"; fi
@@ -94,13 +87,13 @@ echo "Installing providers supported for airflow version ${AIRFLOW_VERSION}"
 sudo -u airflow pip3 install --constraint /constraints.txt $PIP_OPTION -r $MWAA_BASE_PROVIDERS_FILE
 
 # jq is used to parse json
-yum install -y jq
+dnf install -y jq
 
 # nc is used to check DB connectivity
-yum install -y nc
+dnf install -y nc
 
 # install archiving packages
-yum install -y zip unzip bzip2 gzip # tar
+dnf install -y zip unzip bzip2 gzip # tar
 
 # install awscli v2
 zip_file="awscliv2.zip"
@@ -112,4 +105,4 @@ rm $zip_file
 rm -rf ./aws
 cd -  # Return to previous directory
 
-yum clean all
+dnf clean all

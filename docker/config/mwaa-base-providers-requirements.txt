@@ -1,8 +1,8 @@
-apache-airflow-providers-amazon==8.2.0
-apache-airflow-providers-celery==3.2.1
-apache-airflow-providers-common-sql==1.5.2
-apache-airflow-providers-ftp==3.4.2
-apache-airflow-providers-http==4.4.2
-apache-airflow-providers-imap==3.2.2
-apache-airflow-providers-postgres==5.5.1
-apache-airflow-providers-sqlite==3.4.2
+apache-airflow-providers-amazon==8.7.1
+apache-airflow-providers-celery==3.3.4
+apache-airflow-providers-common-sql==1.7.2
+apache-airflow-providers-ftp==3.5.2
+apache-airflow-providers-http==4.5.2
+apache-airflow-providers-imap==3.3.2
+apache-airflow-providers-postgres==5.6.1
+apache-airflow-providers-sqlite==3.4.3

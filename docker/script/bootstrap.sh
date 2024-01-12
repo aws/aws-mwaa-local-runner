@@ -5,7 +5,7 @@ set -e
 # On RHL and Centos based linux, openssl needs to be set as Python Curl SSL library
 export PYCURL_SSL_LIBRARY=openssl
 pip3 install $PIP_OPTION --compile pycurl
-pip3 install $PIP_OPTION celery[sqs]
+pip3 install $PIP_OPTION celery[sqs]==4.4.7
 
 # install postgres python client
 pip3 install $PIP_OPTION psycopg2

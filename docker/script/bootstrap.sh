@@ -4,11 +4,11 @@ set -e
 
 # On RHL and Centos based linux, openssl needs to be set as Python Curl SSL library
 export PYCURL_SSL_LIBRARY=openssl
-pip3 install $PIP_OPTION --compile pycurl
+pip3 install $PIP_OPTION --compile pycurl==7.43.0.5
 pip3 install $PIP_OPTION celery[sqs]==4.4.7
 
 # install postgres python client
-pip3 install $PIP_OPTION psycopg2
+pip3 install $PIP_OPTION psycopg2==2.8.6
 
 # setuptools dropped support for use_2to3 in v58+ and psycopg2 will install the latest v59+ version
 pip3 install $PIP_OPTION "setuptools<=57.*"

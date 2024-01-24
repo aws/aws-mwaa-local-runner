@@ -139,7 +139,8 @@ For example usage see [Installing Python dependencies using PyPi.org Requirement
 - There is a directory at the root of this repository called plugins. 
 - In this directory, create a file for your new custom plugin.
 - Add any Python dependencies to `requirements/requirements.txt`.
-- Adds a local `constraints.txt` file to the `requirements/` directory, that you can add to your S3 bucket's dag folder. Ensuring you have the complete package: packaged_requirements.txt, plugins.zip, and constraints.txt, to build your private Environment
+- Adds a local `constraints.txt` file to the `plugins/` directory, this is zipped together into the `plugins.zip` artefact.
+- Creates a new `packaged_requirements.txt` file with the correct configuration for `--find-links` and `--constraint`. This file should be the one you rename to `requirements.txt` and upload to S3 to be used by MWAA.
 
 **Note**: this step assumes you have a DAG that corresponds to the custom plugin. For example usage [MWAA Code Examples](https://docs.aws.amazon.com/mwaa/latest/userguide/sample-code.html).
 
@@ -158,7 +159,6 @@ For example usage see [Installing Python dependencies using PyPi.org Requirement
 - Learn how to upload the requirements.txt file to your Amazon S3 bucket in [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html).
 - Learn how to upload the DAG code to the dags folder in your Amazon S3 bucket in [Adding or updating DAGs](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-folder.html).
 - Learn more about how to upload the plugins.zip file to your Amazon S3 bucket in [Installing custom plugins](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-import-plugins.html).
-- If using `package-requirements`, make sure you upload the `constraints.txt` file that is auto-generated for you in the `requirements/` directory to your S3 bucket's dag folder.
 
 ## FAQs
 

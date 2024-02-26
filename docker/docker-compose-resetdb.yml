@@ -1,7 +1,7 @@
 version: '3.7'
 services:
     postgres:
-        image: postgres:11-alpine
+        image: postgres:13-alpine
         environment:
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
@@ -14,7 +14,7 @@ services:
             - "${PWD}/db-data:/var/lib/postgresql/data"
 
     resetdb:
-        image: amazon/mwaa-local:2_7
+        image: amazon/mwaa-local:2_8
         depends_on:
             - postgres
         environment:

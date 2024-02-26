@@ -1,4 +1,4 @@
---constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.7.2/constraints-3.11.txt"
+--constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-3.11.txt"
 
-apache-airflow-providers-snowflake==5.0.1
-apache-airflow-providers-mysql==5.3.1
+apache-airflow-providers-snowflake==5.2.1
+apache-airflow-providers-mysql==5.5.1

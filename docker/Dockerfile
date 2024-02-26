@@ -8,9 +8,9 @@ LABEL maintainer="amazon"
 
 # Airflow
 ## Version specific ARGs
-ARG AIRFLOW_VERSION=2.7.2
-ARG WATCHTOWER_VERSION=2.0.1
-ARG PROVIDER_AMAZON_VERSION=8.7.1
+ARG AIRFLOW_VERSION=2.8.1
+ARG WATCHTOWER_VERSION=3.0.1
+ARG PROVIDER_AMAZON_VERSION=8.16.0
 
 ## General ARGs
 ARG AIRFLOW_USER_HOME=/usr/local/airflow
@@ -19,8 +19,8 @@ ARG PYTHON_DEPS=""
 ARG SYSTEM_DEPS=""
 ARG INDEX_URL=""
 ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
-ENV PATH="$PATH:/usr/local/airflow/.local/bin:/root/.local/bin:/usr/local/airflow/.local/lib/python3.10/site-packages"
-ENV PYTHON_VERSION=3.11.6
+ENV PATH="/usr/local/airflow/.local/bin:/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/airflow/.local/lib/python3.11/site-packages:/usr/local/airflow/.local/bin:/usr/local/airflow/.local/lib/python3.11/site-packages:/usr/local/airflow/.local/bin:/usr/local/airflow/.local/lib/python3.11/site-packages"
+ENV PYTHON_VERSION=3.11.7
 
 COPY script/bootstrap.sh /bootstrap.sh
 COPY script/systemlibs.sh /systemlibs.sh

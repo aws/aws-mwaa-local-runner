@@ -11,9 +11,9 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - "${PWD}/dags:/usr/local/airflow/dags"
-            - "${PWD}/plugins:/usr/local/airflow/plugins"
-            - "${PWD}/requirements:/usr/local/airflow/requirements"
+            - "${PWD}/dags:/usr/local/airflow/dags:z"
+            - "${PWD}/plugins:/usr/local/airflow/plugins:z"
+            - "${PWD}/requirements:/usr/local/airflow/requirements:z"
         ports:
             - "8080:8080"
         command: webserver

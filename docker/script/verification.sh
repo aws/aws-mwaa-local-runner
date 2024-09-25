@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-EXPECTED_AIRFLOW_VERSION="2.9.2"
-EXPECTED_WATCHTOWER_VERSION="3.2.0"
+EXPECTED_AIRFLOW_VERSION="2.10.1"
+EXPECTED_WATCHTOWER_VERSION="3.3.1"
 
 validate_version_with_pip() {
   if [[ $(pip3 show "$1" | grep 'Version' | grep -o '[0-9].*') != "$2" ]]

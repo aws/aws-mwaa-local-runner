@@ -102,13 +102,11 @@ dnf install -y nc
 dnf install -y zip unzip bzip2 gzip # tar
 
 # install awscli v2
-zip_file="awscliv2.zip"
-cd /tmp
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o $zip_file
-unzip $zip_file
-./aws/install
-rm $zip_file
-rm -rf ./aws
-cd -  # Return to previous directory
+wget "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m).zip" -P /tmp
+cd /tmp \
+  && unzip awscli-exe-linux-$(uname -m).zip \
+  && sudo -u airflow ./aws/install \
+  && cd - \
+  && rm -rf /tmp/*
 
 dnf clean all

@@ -34,14 +34,13 @@ tar -xf ./python_install/$python_tar -C ./python_install
 dnf install -y dnf-plugins-core
 dnf builddep -y python3
 
-
 pushd /python_install/$python_file 
 ./configure 
 make install -j $(nproc) # use -j to set the cores for the build
 popd
 
 # Upgrade pip
-pip3 install $PIP_OPTION --upgrade 'pip<23'
+pip3 install $PIP_OPTION --upgrade 'pip<23' cryptography
 
 # openjdk is required for JDBC to work with Airflow
 dnf install -y java-17-amazon-corretto

@@ -27,9 +27,6 @@ dnf install -y jq
 # nc is used to check DB connectivity
 dnf install -y nc
 
-# Needed for generating fernet key for local runner
-dnf install -y python3-cryptography
-
 # Install additional system library dependencies. Provided as a string of libraries separated by space
 if [ -n "${SYSTEM_DEPS}" ]; then dnf install -y "${SYSTEM_DEPS}"; fi
 

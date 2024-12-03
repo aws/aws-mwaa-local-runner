@@ -80,6 +80,15 @@ Runs a local Apache Airflow environment that is a close representation of MWAA b
 
 To stop the local environment, Ctrl+C on the terminal and wait till the local runner and the postgres containers are stopped.
 
+If you need to authenticate with any live AWS services such as S3, export the following environment variables, which will get passed through:
+
+```bash
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_DEFAULT_REGION=...
+./mwaa-local-env start
+```
+
 ### Step three: Accessing the Airflow UI
 
 By default, the `bootstrap.sh` script creates a username and password for your local Airflow environment.

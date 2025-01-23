@@ -18,7 +18,7 @@ display_help() {
    echo "test-requirements      Install requirements on an ephemeral instance of the container."
    echo "package-requirements   Download requirements WHL files into plugins folder."
    echo "test-startup-script    Execute shell script on an ephemeral instance of the container."
-   echo "validate-prereqs       Validate pre-reqs installed (docker, docker-compose, python3, pip3)"
+   echo "validate-prereqs       Validate pre-reqs installed (docker, docker compose, python3, pip3)"
    echo
 }
 
@@ -30,9 +30,9 @@ validate_prereqs() {
       echo -e "Docker is Installed. \xE2\x9C\x94"
    fi
 
-   docker-compose -v >/dev/null 2>&1
+   docker compose -v >/dev/null 2>&1
    if [ $? -ne 0 ]; then
-      echo -e "'docker-compose' is not installed. \xE2\x9D\x8C"
+      echo -e "'docker compose' is not installed. \xE2\x9D\x8C"
    else
       echo -e "Docker compose is Installed. \xE2\x9C\x94"
    fi
@@ -89,15 +89,15 @@ package-requirements)
      build_image
    fi
    docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
-   ;;   
+   ;;
 build-image)
    build_image
    ;;
 reset-db)
-   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up --abort-on-container-exit
+   docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up --abort-on-container-exit
    ;;
 start)
-   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
+   docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
    ;;
 help)
    display_help

@@ -66,6 +66,8 @@ fi
 # install mariadb_devel and its dependencies
 sudo rpm -ivh /mariadb_rpm/*
 
+sudo chown airflow /*.txt
+
 # install minimal Airflow packages
 sudo -u airflow pip3 install $PIP_OPTION --no-use-pep517 --constraint /constraints.txt poetry
 sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt cached-property

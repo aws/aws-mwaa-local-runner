@@ -132,7 +132,7 @@ case "$1" in
     export AIRFLOW__CORE__LOAD_EXAMPLES="False"
 
     install_requirements
-    airflow db init
+    airflow db migrate
     if [ "$AIRFLOW__CORE__EXECUTOR" = "LocalExecutor" ] || [ "$AIRFLOW__CORE__EXECUTOR" = "SequentialExecutor" ]; then
       # With the "Local" and "Sequential" executors it should all run in one container.
       airflow scheduler &
@@ -145,7 +145,7 @@ case "$1" in
   resetdb)
     airflow db reset -y
     sleep 2
-    airflow db init
+    airflow db migrate
     ;;
   test-requirements)
     # if S3_REQUIREMENTS_PATH

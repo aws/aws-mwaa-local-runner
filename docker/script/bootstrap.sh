@@ -52,15 +52,46 @@ dnf install -y java-17-amazon-corretto
 sudo mkdir mariadb_rpm
 sudo chown airflow /mariadb_rpm
 
-if [[ $(uname -p) == "aarch64" ]]; then
-  wget https://mirror.mariadb.org/yum/11.4/fedora38-aarch64/rpms/MariaDB-common-11.4.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
-  wget https://mirror.mariadb.org/yum/11.4/fedora38-aarch64/rpms/MariaDB-shared-11.4.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
-  wget https://mirror.mariadb.org/yum/11.4/fedora38-aarch64/rpms/MariaDB-devel-11.4.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
+# The original mariadb mirror blocks curl calls to the folders
+MIRROR_URL="https://mirror.rackspace.com/mariadb"
+YUM_VERSION_PREFIX="11.8"  # e.g. 11.8.2
+MARIADB_VERSION_PREFIX="11.5"  # e.g. 11.5.1
+FEDORAVERSION="38"
+
+# Detect architecture and map to repo format
+detected_arch=$(uname -p)
+if [[ "$detected_arch" == "arm" ]]; then
+    folder_arch="aarch64"
+    rpm_arch="aarch64"
+elif [[ "$detected_arch" == "i386" || "$detected_arch" == "amd64" || "$detected_arch" == "x86_64" ]]; then
+    folder_arch="amd64"
+    rpm_arch="x86_64"
 else
-  wget https://mirror.mariadb.org/yum/11.4/fedora38-amd64/rpms/MariaDB-common-11.4.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
-  wget https://mirror.mariadb.org/yum/11.4/fedora38-amd64/rpms/MariaDB-shared-11.4.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
-  wget https://mirror.mariadb.org/yum/11.4/fedora38-amd64/rpms/MariaDB-devel-11.4.2-1.fc38.$(uname -p).rpm -P /mariadb_rpm
+    folder_arch="$detected_arch"
+    rpm_arch="$detected_arch"
 fi
+
+# Find latest YUM version
+latest_yum_version=$(curl -s "$MIRROR_URL/yum/" | grep -o "href=\"$YUM_VERSION_PREFIX\.[0-9]*/\"" | sed 's/href="//g' | sed 's/"//g' | sort -V | tail -1)
+if [[ -z "$latest_yum_version" ]]; then
+    exit 1
+fi
+
+# Find latest MariaDB version
+rpm_dir="$MIRROR_URL/yum/$latest_yum_version/fedora$FEDORAVERSION-$folder_arch/rpms/"
+latest_mariadb_version=$(curl -s "$rpm_dir" | grep -o "MariaDB-common-$MARIADB_VERSION_PREFIX\.[0-9]*-[0-9]*" | sort -V | tail -1 | sed "s/MariaDB-common-//")
+if [[ -z "$latest_mariadb_version" ]]; then
+    exit 1
+fi
+
+# Download RPMs
+for rpm_base in MariaDB-common MariaDB-shared MariaDB-devel; do
+    rpm_url="$rpm_dir${rpm_base}-$latest_mariadb_version.fc$FEDORAVERSION.$rpm_arch.rpm"
+    rpm_file="/mariadb_rpm/${rpm_base}-$latest_mariadb_version.fc$FEDORAVERSION.$rpm_arch.rpm"
+    if curl -s --head "$rpm_url" | head -n 1 | grep "HTTP/1.[01] [23].." > /dev/null; then
+        curl -L -o "$rpm_file" "$rpm_url"
+    fi
+done
 
 # install mariadb_devel and its dependencies
 sudo rpm -ivh /mariadb_rpm/*

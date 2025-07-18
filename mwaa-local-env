@@ -89,7 +89,7 @@ package-requirements)
      build_image
    fi
    docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
-   ;;   
+   ;;
 build-image)
    build_image
    ;;
@@ -98,6 +98,9 @@ reset-db)
    ;;
 start)
    docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
+   ;;
+shell)
+   docker-compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml exec local-runner bash
    ;;
 help)
    display_help

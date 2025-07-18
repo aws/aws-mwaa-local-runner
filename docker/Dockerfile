@@ -46,7 +46,7 @@ COPY config/webserver_config.py ${AIRFLOW_USER_HOME}/webserver_config.py
 RUN chown -R airflow: ${AIRFLOW_USER_HOME}
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 8080 5555 8793
+EXPOSE 8888 5555 8793
 
 USER airflow
 WORKDIR ${AIRFLOW_USER_HOME}

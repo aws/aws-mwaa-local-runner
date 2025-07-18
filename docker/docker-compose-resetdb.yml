@@ -1,4 +1,6 @@
 version: '3.7'
+volumes:
+    postgres_data: {}
 services:
     postgres:
         image: postgres:10-alpine
@@ -11,8 +13,7 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - "${PWD}/db-data:/var/lib/postgresql/data"
-
+            - "postgres_data:/var/lib/postgresql/data"
     resetdb:
         image: amazon/mwaa-local:2_6
         depends_on:
@@ -29,5 +30,5 @@ services:
             - "${PWD}/plugins:/usr/local/airflow/plugins"
             - "${PWD}/requirements:/usr/local/airflow/requirements"
         ports:
-            - "8080:8080"
+            - "8888:8888"
         command: resetdb

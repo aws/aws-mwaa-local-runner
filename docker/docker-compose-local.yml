@@ -1,4 +1,6 @@
 version: '3.7'
+volumes:
+    postgres_data: {}
 services:
     postgres:
         image: postgres:10-alpine
@@ -11,8 +13,8 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-            - "${PWD}/db-data:/var/lib/postgresql/data"
-
+            - "postgres_data:/var/lib/postgresql/data"
+            - ~/.aws:/usr/local/airflow/.aws # Include AWS config to interact with AWS APIs
     local-runner:
         image: amazon/mwaa-local:2_6
         restart: always
@@ -21,6 +23,7 @@ services:
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
+            - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
         logging:
             options:
                 max-size: 10m
@@ -31,7 +34,7 @@ services:
             - "${PWD}/requirements:/usr/local/airflow/requirements"
             - "${PWD}/startup_script:/usr/local/airflow/startup"
         ports:
-            - "8080:8080"
+            - "8888:8888"
         command: local-runner
         healthcheck:
             test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]

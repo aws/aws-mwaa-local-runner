@@ -1,7 +1,9 @@
 /git
 *.workspace
+dags/**/*.py
 dags/**/*.pyc
+plugins/**
 /.idea
 /logs
 /db-data
-.DS_Store
+*.iml

@@ -11,7 +11,7 @@ services:
                 max-size: 10m
                 max-file: "3"
         volumes:
-           - "/db-data:/var/lib/postgresql/data"
+           - "${PWD}/db-data:/var/lib/postgresql/data"
 
     local-runner:
         image: amazon/mwaa-local:2_10_3

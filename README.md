@@ -1,6 +1,7 @@
 ## Note
-Starting from Airflow version 2.9, MWAA has open-sourced the original Docker image used in our production deployments. You can refer to our open-source image repository at https://github.com/aws/amazon-mwaa-docker-images to create a local environment identical to that of MWAA.
-You can also continue to use the MWAA Local Runner for testing and packaging requirements for all Airflow versions supported on MWAA.
+**Starting from Airflow version 2.9, MWAA has open-sourced the original Docker image used in production deployments. You can refer to MWAA open-source image repository at https://github.com/aws/amazon-mwaa-docker-images to create a local environment identical to that of MWAA.**
+
+Airflow 3.x versions would be suported via [amazon-mwaa-docker-images](https://github.com/aws/amazon-mwaa-docker-images) repo.
 
 # About aws-mwaa-local-runner
 

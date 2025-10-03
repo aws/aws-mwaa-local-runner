@@ -3,6 +3,8 @@
 AIRFLOW_VERSION=2_10_3
 DOCKER_COMPOSE_PROJECT_NAME=aws-mwaa-local-runner-$AIRFLOW_VERSION
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 display_help() {
    # Display Help
    echo "======================================"
@@ -53,7 +55,7 @@ validate_prereqs() {
 }
 
 build_image() {
-   docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION ./docker
+   docker build --rm --compress -t amazon/mwaa-local:$AIRFLOW_VERSION "$SCRIPT_DIR/docker"
 }
 
 case "$1" in
@@ -68,7 +70,7 @@ test-requirements)
      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
      build_image
    fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
+   docker run -v "$SCRIPT_DIR/dags:/usr/local/airflow/dags" -v "$SCRIPT_DIR/plugins:/usr/local/airflow/plugins" -v "$SCRIPT_DIR/requirements:/usr/local/airflow/requirements" -it amazon/mwaa-local:$AIRFLOW_VERSION test-requirements
    ;;
 test-startup-script)
    BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
@@ -78,7 +80,7 @@ test-startup-script)
       echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
       build_image
    fi
-   docker run -v $(pwd)/startup_script:/usr/local/airflow/startup -it amazon/mwaa-local:$AIRFLOW_VERSION test-startup-script
+   docker run -v "$SCRIPT_DIR/startup_script:/usr/local/airflow/startup" -it amazon/mwaa-local:$AIRFLOW_VERSION test-startup-script
    ;;
 package-requirements)
    BUILT_IMAGE=$(docker images -q amazon/mwaa-local:$AIRFLOW_VERSION)
@@ -88,16 +90,16 @@ package-requirements)
      echo "Container amazon/mwaa-local:$AIRFLOW_VERSION not built. Building locally."
      build_image
    fi
-   docker run -v $(pwd)/dags:/usr/local/airflow/dags -v $(pwd)/plugins:/usr/local/airflow/plugins -v $(pwd)/requirements:/usr/local/airflow/requirements -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
+   docker run -v "$SCRIPT_DIR/dags:/usr/local/airflow/dags" -v "$SCRIPT_DIR/plugins:/usr/local/airflow/plugins" -v "$SCRIPT_DIR/requirements:/usr/local/airflow/requirements" -it amazon/mwaa-local:$AIRFLOW_VERSION package-requirements
    ;;
 build-image)
    build_image
    ;;
 reset-db)
-   docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-resetdb.yml up --abort-on-container-exit
+   docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f "$SCRIPT_DIR/docker/docker-compose-resetdb.yml" up --abort-on-container-exit
    ;;
 start)
-   docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f ./docker/docker-compose-local.yml up
+   docker compose -p $DOCKER_COMPOSE_PROJECT_NAME -f "$SCRIPT_DIR/docker/docker-compose-local.yml" up
    ;;
 help)
    display_help

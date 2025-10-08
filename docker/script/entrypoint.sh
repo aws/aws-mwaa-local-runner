@@ -126,6 +126,7 @@ case "$1" in
     fi
 
 
+    cd "$AIRFLOW_HOME"
     execute_startup_script
     source stored_env
     export AIRFLOW_HOME="/usr/local/airflow"

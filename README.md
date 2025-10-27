@@ -66,6 +66,16 @@ cd aws-mwaa-local-runner
 ```
 
 ### Step one: Building the Docker image
+#### For Windows Users Only
+
+If you are using Windows, you may need to run the following commands to adjust line endings in the script files before building the docker image. Windows often modifies line endings in .sh files, which can cause issues. The commands below will convert the line endings to Unix format:
+
+```bash
+sed -i -e 's/\r$//' docker/script/bootstrap.sh
+sed -i -e 's/\r$//' docker/script/systemlibs.sh
+sed -i -e 's/\r$//' docker/script/generate_key.sh
+```
+
 
 Build the Docker container image using the following command:
 
@@ -78,6 +88,7 @@ Build the Docker container image using the following command:
 ### Step two: Running Apache Airflow
 
 #### Local runner
+
 
 Runs a local Apache Airflow environment that is a close representation of MWAA by configuration.
 

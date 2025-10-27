@@ -41,6 +41,10 @@ package_requirements() {
     if [[ -e "$AIRFLOW_HOME/$REQUIREMENTS_FILE" ]]; then
         echo "Packaging requirements.txt into plugins"
         pip3 download -r "$AIRFLOW_HOME/$REQUIREMENTS_FILE" -d "$AIRFLOW_HOME/plugins"
+        pip_exit_code=$?
+        if [[ $pip_exit_code -ne 0 ]]; then
+          exit $pip_exit_code
+        fi
         cd "$AIRFLOW_HOME/plugins"
         zip "$AIRFLOW_HOME/requirements/plugins.zip" *
         printf '%s\n%s\n' "--no-index" "$(cat $AIRFLOW_HOME/$REQUIREMENTS_FILE)" > "$AIRFLOW_HOME/requirements/packaged_requirements.txt"

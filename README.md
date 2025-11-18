@@ -65,6 +65,29 @@ git clone https://github.com/aws/aws-mwaa-local-runner.git
 cd aws-mwaa-local-runner
 ```
 
+### AWS Credentials Configuration (Optional)
+
+For DAGs that interact with AWS services, you can configure credentials in two ways:
+
+#### Option 1: Auto-refresh with AWS Profile (Recommended for local development)
+
+Set `AWS_PROFILE=your-profile-name` in `docker/config/.env.localrunner`. The container will automatically pick up fresh credentials when you refresh them via `aws sso login`, Leapp, or aws-vault. No container restart needed.
+
+**How it works:**
+- Your `~/.aws` directory is mounted read-only into the container
+- When you refresh credentials on your host, the container immediately sees the changes
+- Saves time - no need to stop/restart container when credentials expire
+
+**Security Note:** ⚠️
+- All AWS profiles in your `~/.aws` directory are accessible to the container (not just the selected profile)
+- The mount is read-only - the container cannot modify your credentials
+- **Only run trusted DAG code** in your local environment
+- **Recommended for local development only** - production MWAA uses IAM roles
+
+#### Option 2: Manual Credentials (Legacy)
+
+Set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_SESSION_TOKEN` in `docker/config/.env.localrunner`. Requires container restart when credentials expire.
+
 ### Step one: Building the Docker image
 
 Build the Docker container image using the following command:

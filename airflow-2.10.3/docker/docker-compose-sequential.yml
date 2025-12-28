@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  webserver:
+    image: amazon/mwaa-local:2_10_3
+    restart: always
+    environment:
+      - LOAD_EX=n
+      - EXECUTOR=Sequential
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    volumes:
+      - "${PWD}/dags:/usr/local/airflow/dags"
+      - "${PWD}/plugins:/usr/local/airflow/plugins"
+      - "${PWD}/requirements:/usr/local/airflow/requirements"
+    ports:
+      - "8080:8080"
+    command: webserver
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+      interval: 30s
+      timeout: 30s
+      retries: 3

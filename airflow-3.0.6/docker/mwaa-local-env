@@ -1,0 +1,79 @@
+#!/bin/bash
+# AWS MWAA Local Runner 3.0.6 - Environment Variables
+# This file is equivalent to mwaa-local-env from MWAA 2.10.3
+# 
+# Usage:
+#   source mwaa-local-env
+#   docker-compose -f docker-compose-local.yml up
+#
+# Note: Alternatively, you can use .env file (automatically read by Docker Compose)
+
+# ============================================================================
+# AWS Credentials
+# ============================================================================
+export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID:-your-aws-access-key-id}"
+export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY:-your-aws-secret-access-key}"
+export AWS_SESSION_TOKEN="${AWS_SESSION_TOKEN:-}"  # Optional: for temporary credentials
+export AWS_REGION="${AWS_REGION:-us-west-2}"
+export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-us-west-2}"
+
+# ============================================================================
+# MWAA Configuration
+# ============================================================================
+export MWAA__CORE__REQUIREMENTS_PATH="${MWAA__CORE__REQUIREMENTS_PATH:-/usr/local/airflow/requirements/requirements.txt}"
+export MWAA__CORE__AUTH_TYPE="testing"
+export MWAA__CORE__STARTUP_SCRIPT_PATH="${MWAA__CORE__STARTUP_SCRIPT_PATH:-}"
+export MWAA__CORE__CUSTOM_AIRFLOW_CONFIGS="{}"
+export MWAA__CORE__FERNET_KEY='{"FernetKey": "fake-key-nNge+lks3RBeGVrnZ1Dq5GjKerbZKmb7dXNnsNsGy3E="}'
+export MWAA__WEBSERVER__SECRET='{"secret_key": "fake-key-aYDdF6d+Fjznai5yBW63CUAi0IipJqDHlNSWIun6y8o="}'
+export MWAA__CORE__KMS_KEY_ARN="${MWAA__CORE__KMS_KEY_ARN:-}"
+
+# ============================================================================
+# Snowflake Configuration
+# ============================================================================
+export SNOWFLAKE_ACCOUNT="${SNOWFLAKE_ACCOUNT:-your-snowflake-account}"
+export SNOWFLAKE_USER="${SNOWFLAKE_USER:-your-snowflake-user}"
+export SNOWFLAKE_ROLE="${SNOWFLAKE_ROLE:-your-snowflake-role}"
+export SNOWFLAKE_WAREHOUSE="${SNOWFLAKE_WAREHOUSE:-your-snowflake-warehouse}"
+export SNOWFLAKE_DATABASE="${SNOWFLAKE_DATABASE:-your-snowflake-database}"
+export SNOWFLAKE_SCHEMA="${SNOWFLAKE_SCHEMA:-your-snowflake-schema}"
+export SNOWFLAKE_PRIVATE_KEY_PATH="${SNOWFLAKE_PRIVATE_KEY_PATH:-/usr/local/airflow/secrets/snowflake_key.p8}"
+
+# ============================================================================
+# Database Configuration
+# ============================================================================
+export MWAA__DB__CREDENTIALS='{"username": "airflow", "password": "airflow"}'
+export MWAA__DB__POSTGRES_DB="airflow"
+export MWAA__DB__POSTGRES_HOST="postgres"
+export MWAA__DB__POSTGRES_PORT="5432"
+export MWAA__DB__POSTGRES_SSLMODE="prefer"
+
+# ============================================================================
+# Executor Configuration
+# ============================================================================
+export MWAA__CORE__EXECUTOR_TYPE="LocalExecutor"
+export MWAA__CORE__API_SERVER_URL="http://webserver:8080"
+
+# ============================================================================
+# Airflow Configuration
+# ============================================================================
+export AIRFLOW__CORE__PARALLELISM="4"
+export AIRFLOW__CORE__DAG_CONCURRENCY="2"
+export AIRFLOW__API_AUTH__JWT_SECRET="fake-jwt-secret-for-local-testing-32-chars-min"
+
+# ============================================================================
+# Logging Configuration
+# ============================================================================
+export MWAA__LOGGING__AIRFLOW_DAGPROCESSOR_LOGS_ENABLED="false"
+export MWAA__LOGGING__AIRFLOW_DAGPROCESSOR_LOG_LEVEL="INFO"
+export MWAA__LOGGING__AIRFLOW_SCHEDULER_LOGS_ENABLED="false"
+export MWAA__LOGGING__AIRFLOW_SCHEDULER_LOG_LEVEL="INFO"
+export MWAA__LOGGING__AIRFLOW_TRIGGERER_LOGS_ENABLED="false"
+export MWAA__LOGGING__AIRFLOW_TRIGGERER_LOG_LEVEL="INFO"
+export MWAA__LOGGING__AIRFLOW_TASK_LOGS_ENABLED="false"
+export MWAA__LOGGING__AIRFLOW_TASK_LOG_LEVEL="INFO"
+export MWAA__LOGGING__AIRFLOW_WEBSERVER_LOGS_ENABLED="false"
+export MWAA__LOGGING__AIRFLOW_WEBSERVER_LOG_LEVEL="INFO"
+export MWAA__LOGGING__AIRFLOW_WORKER_LOGS_ENABLED="false"
+export MWAA__LOGGING__AIRFLOW_WORKER_LOG_LEVEL="INFO"
+

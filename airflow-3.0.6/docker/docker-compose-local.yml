@@ -1,0 +1,141 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: mwaa-306-db
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - "${PWD}/../db-data:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: always
+    ports:
+      - "5433:5432"  # Changed to 5433 to avoid conflict with 2.10.3
+
+  migratedb:
+    image: amazon-mwaa-docker-images/airflow:3.0.6-dev
+    restart: "no"
+    init: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      &airflow-env
+      # AWS credentials (read from your host environment or .env file)
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      AWS_SESSION_TOKEN: "${AWS_SESSION_TOKEN:-}"
+      AWS_REGION: "${AWS_REGION:-us-west-2}"
+      AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION:-us-west-2}"
+
+      # MWAA Core Configuration
+      MWAA__CORE__REQUIREMENTS_PATH: ${MWAA__CORE__REQUIREMENTS_PATH:-/usr/local/airflow/requirements/requirements.txt}
+      MWAA__CORE__AUTH_TYPE: "testing"
+      MWAA__CORE__STARTUP_SCRIPT_PATH: ${MWAA__CORE__STARTUP_SCRIPT_PATH:-}
+      MWAA__CORE__CUSTOM_AIRFLOW_CONFIGS: "{}"
+      MWAA__CORE__FERNET_KEY: '{"FernetKey": "fake-key-nNge+lks3RBeGVrnZ1Dq5GjKerbZKmb7dXNnsNsGy3E="}'
+      MWAA__WEBSERVER__SECRET: '{"secret_key": "fake-key-aYDdF6d+Fjznai5yBW63CUAi0IipJqDHlNSWIun6y8o="}'
+      MWAA__CORE__KMS_KEY_ARN: ${MWAA__CORE__KMS_KEY_ARN:-}
+
+      # Snowflake configuration (set real values via environment or .env file)
+      SNOWFLAKE_ACCOUNT: "${SNOWFLAKE_ACCOUNT:-}"
+      SNOWFLAKE_USER: "${SNOWFLAKE_USER:-}"
+      SNOWFLAKE_ROLE: "${SNOWFLAKE_ROLE:-}"
+      SNOWFLAKE_WAREHOUSE: "${SNOWFLAKE_WAREHOUSE:-}"
+      SNOWFLAKE_DATABASE: "${SNOWFLAKE_DATABASE:-}"
+      SNOWFLAKE_SCHEMA: "${SNOWFLAKE_SCHEMA:-}"
+      # Path inside container where private key is mounted
+      SNOWFLAKE_PRIVATE_KEY_PATH: "${SNOWFLAKE_PRIVATE_KEY_PATH:-/usr/local/airflow/secrets/snowflake_key.p8}"
+
+      # Database Configuration
+      MWAA__DB__CREDENTIALS: '{"username": "airflow", "password": "airflow"}'
+      MWAA__DB__POSTGRES_DB: "airflow"
+      MWAA__DB__POSTGRES_HOST: "postgres"
+      MWAA__DB__POSTGRES_PORT: "5432"
+      MWAA__DB__POSTGRES_SSLMODE: "prefer"
+
+      # Executor Configuration (LocalExecutor - matches 2.10.3 pattern)
+      MWAA__CORE__EXECUTOR_TYPE: LocalExecutor
+      MWAA__CORE__API_SERVER_URL: http://webserver:8080
+
+      # Reduced Parallelism for Local Testing
+      AIRFLOW__CORE__PARALLELISM: 4
+      AIRFLOW__CORE__DAG_CONCURRENCY: 2
+
+      # Required Airflow 3.0 Configuration
+      AIRFLOW__API_AUTH__JWT_SECRET: "fake-jwt-secret-for-local-testing-32-chars-min"
+
+      # Logging Configuration (Local file-based logging)
+      MWAA__LOGGING__AIRFLOW_DAGPROCESSOR_LOGS_ENABLED: false
+      MWAA__LOGGING__AIRFLOW_DAGPROCESSOR_LOG_LEVEL: INFO
+      MWAA__LOGGING__AIRFLOW_SCHEDULER_LOGS_ENABLED: false
+      MWAA__LOGGING__AIRFLOW_SCHEDULER_LOG_LEVEL: INFO
+      MWAA__LOGGING__AIRFLOW_TRIGGERER_LOGS_ENABLED: false
+      MWAA__LOGGING__AIRFLOW_TRIGGERER_LOG_LEVEL: INFO
+      MWAA__LOGGING__AIRFLOW_TASK_LOGS_ENABLED: false
+      MWAA__LOGGING__AIRFLOW_TASK_LOG_LEVEL: INFO
+      MWAA__LOGGING__AIRFLOW_WEBSERVER_LOGS_ENABLED: false
+      MWAA__LOGGING__AIRFLOW_WEBSERVER_LOG_LEVEL: INFO
+      MWAA__LOGGING__AIRFLOW_WORKER_LOGS_ENABLED: false
+      MWAA__LOGGING__AIRFLOW_WORKER_LOG_LEVEL: INFO
+
+    volumes:
+      - "${PWD}/../dags:/usr/local/airflow/dags"
+      - "${PWD}/../plugins:/usr/local/airflow/plugins"
+      - "${PWD}/../requirements:/usr/local/airflow/requirements"
+      - "${PWD}/../startup_script:/usr/local/airflow/startup"
+      - "${PWD}/../logs:/usr/local/airflow/logs"
+      # Mount for secrets (Snowflake private key, etc.)
+      - "${PWD}/../secrets:/usr/local/airflow/secrets"
+
+    command: migrate-db
+
+  webserver:
+    image: amazon-mwaa-docker-images/airflow:3.0.6-dev
+    restart: always
+    init: true
+    depends_on:
+      migratedb:
+        condition: service_completed_successfully
+    environment:
+      <<: *airflow-env
+    volumes:
+      - "${PWD}/../dags:/usr/local/airflow/dags"
+      - "${PWD}/../plugins:/usr/local/airflow/plugins"
+      - "${PWD}/../requirements:/usr/local/airflow/requirements"
+      - "${PWD}/../startup_script:/usr/local/airflow/startup"
+      - "${PWD}/../logs:/usr/local/airflow/logs"
+      - "${PWD}/../secrets:/usr/local/airflow/secrets"
+    ports:
+      - "8081:8080"  # Changed to 8081 to avoid conflict with 2.10.3 (which uses 8080)
+    command: webserver
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  scheduler:
+    image: amazon-mwaa-docker-images/airflow:3.0.6-dev
+    restart: always
+    init: true
+    depends_on:
+      migratedb:
+        condition: service_completed_successfully
+    environment:
+      <<: *airflow-env
+    volumes:
+      - "${PWD}/../dags:/usr/local/airflow/dags"
+      - "${PWD}/../plugins:/usr/local/airflow/plugins"
+      - "${PWD}/../requirements:/usr/local/airflow/requirements"
+      - "${PWD}/../startup_script:/usr/local/airflow/startup"
+      - "${PWD}/../logs:/usr/local/airflow/logs"
+      - "${PWD}/../secrets:/usr/local/airflow/secrets"
+    command: scheduler
+

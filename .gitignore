@@ -1,7 +1,14 @@
-/git
-*.workspace
-dags/**/*.pyc
-/.idea
-/logs
-/db-data
+.idea/
+
+# Ignore all logs and db-data folders in any subfolder
+**/logs/
+**/db-data/
+
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor / IDE
+*.workspace

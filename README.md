@@ -12,10 +12,6 @@ _Please note: MWAA/AWS/DAG/Plugin issues should be raised through AWS Support or
 _Please note: The dynamic configurations which are dependent on the class of an environment are
 aligned with the Large environment class in this repository._
 
-## About the CLI
-
-The CLI builds a Docker container image locally that’s similar to a MWAA production image. This allows you to run a local Apache Airflow environment to develop and test DAGs, custom plugins, and dependencies before deploying to MWAA.
-
 ## What this repo contains
 
 ```text
@@ -29,13 +25,19 @@ docker/
     constraints.txt
     mwaa-base-providers-requirements.txt
     webserver_config.py
-    .env.localrunner
+    .env.localrunner              # Personal config (gitignored, created from .env.example)
+    zscaler-root-ca.crt           # SSL cert for corporate networks (gitignored)
   script/
     bootstrap.sh
     entrypoint.sh
     systemlibs.sh
     generate_key.sh
+    run-startup.sh
+    shell-launch-script.sh
+    verification.sh
   docker-compose-local.yml
+  docker-compose-local.override.example.yml   # Template for personal DAG mounts
+  docker-compose-local.override.yml           # Personal DAG mounts (gitignored)
   docker-compose-resetdb.yml
   docker-compose-sequential.yml
   Dockerfile
@@ -43,12 +45,16 @@ plugins/
   README.md
 requirements/
   requirements.txt
+startup_script/
+  startup.sh
 .gitignore
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
+justfile                          # just command runner recipes
 LICENSE
 mwaa-local-env
 README.md
+SET_UP_MWAA.md                    # Detailed project-specific setup guide
 VERSION
 ```
 
@@ -57,13 +63,61 @@ VERSION
 - **macOS**: [Install Docker Desktop](https://docs.docker.com/desktop/).
 - **Linux/Ubuntu**: [Install Docker Compose](https://docs.docker.com/compose/install/) and [Install Docker Engine](https://docs.docker.com/engine/install/).
 - **Windows**: Windows Subsystem for Linux (WSL) to run the bash based command `mwaa-local-env`. Please follow [Windows Subsystem for Linux Installation (WSL)](https://docs.docker.com/docker-for-windows/wsl/) and [Using Docker in WSL 2](https://code.visualstudio.com/blogs/2020/03/02/docker-in-wsl2), to get started.
+- **Optional**: [Install just](https://github.com/casey/just) command runner (`brew install just` on macOS) for simplified commands.
 
 ## Get started
 
 ```bash
-git clone https://github.com/aws/aws-mwaa-local-runner.git
-cd aws-mwaa-local-runner
+git clone git@github.com:SpringCare/dp-aws-mwaa-local-runner.git
 ```
+
+### Quick Start with Just (Recommended)
+
+If you have `just` installed, you can use simplified commands:
+
+```bash
+# First-time setup (creates config files, exports Zscaler cert if needed)
+just setup
+```
+Setup will create 2 files docker/config/.env.localrunner and docker/docker-compose-local.override.yml
+- Edit docker/config/.env.localrunner with your personal settings
+- Edit docker/docker-compose-local.override.yml to mount your DAGs, see docker/docker-compose-local.override.example
+
+```bash
+# Build the Docker image
+just build
+
+# Start the environment
+just start
+
+# Open the Airflow UI
+just open
+```
+
+See all available commands with `just --list` or refer to the [justfile](justfile).
+
+### Quick Start with Just (Recommended)
+
+If you have `just` installed, you can use simplified commands:
+
+```bash
+# First-time setup (creates config files, exports Zscaler cert if needed)
+just setup
+
+# Edit docker/config/.env.localrunner with your personal settings
+# Edit docker/docker-compose-local.override.yml to mount your DAGs
+
+# Build the Docker image
+just build
+
+# Start the environment
+just start
+
+# Open the Airflow UI
+just open
+```
+
+See all available commands with `just --list` or refer to the [justfile](justfile).
 
 ### Step one: Building the Docker image
 
@@ -71,6 +125,8 @@ Build the Docker container image using the following command:
 
 ```bash
 ./mwaa-local-env build-image
+# or with just:
+just build
 ```
 
 **Note**: it takes several minutes to build the Docker image locally.
@@ -83,9 +139,11 @@ Runs a local Apache Airflow environment that is a close representation of MWAA b
 
 ```bash
 ./mwaa-local-env start
+# or with just:
+just start
 ```
 
-To stop the local environment, Ctrl+C on the terminal and wait till the local runner and the postgres containers are stopped.
+To stop the local environment, Ctrl+C on the terminal and wait till the local runner and the postgres containers are stopped. Or with just: `just stop`.
 
 ### Step three: Accessing the Airflow UI
 
@@ -159,6 +217,37 @@ For example usage see [Installing Python dependencies using PyPi.org Requirement
 ./mwaa-local-env test-startup-script
 ```
 
+## Just Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `just setup` | First-time setup (creates config files, exports Zscaler cert) |
+| `just setup-zscaler` | Re-export Zscaler certificate for SSL |
+| `just build` | Build the Docker image |
+| `just start` | Start the containers |
+| `just stop` | Stop the containers |
+| `just restart` | Full restart (picks up env changes) |
+| `just logs` | Tail container logs |
+| `just shell` | Shell into the container |
+| `just open` | Open Airflow UI in browser |
+| `just reset` | Wipe database and restart fresh |
+| `just status` | Check container status |
+| `just get-secret <name>` | Get secret from AWS Secrets Manager |
+
+## Configuration
+
+### Personal Environment Config
+
+Your personal configuration lives in `docker/config/.env.localrunner` (gitignored). Create it from the example template during setup or manually.
+
+### Personal DAG Mounts
+
+Customize which DAGs are mounted in `docker/docker-compose-local.override.yml` (gitignored). Use `docker/docker-compose-local.override.example.yml` as a template.
+
+### Zscaler Certificate (Corporate Networks)
+
+If you're behind a corporate network with Zscaler SSL inspection, run `just setup-zscaler` to export the certificate. This is handled automatically during `just setup`.
+
 ## What's next?
 
 - Learn how to upload the requirements.txt file to your Amazon S3 bucket in [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html).
@@ -193,6 +282,8 @@ The following section contains errors you may encounter when using the Docker co
 
 ```bash
 ./mwaa-local-env reset-db
+# or with just:
+just reset
 ```
 
 - If you are moving from an older version of local-runner you may need to run the above reset-db command, or delete your `./db-data` folder. Note, too, that newer Airflow versions have newer provider packages, which may require updating your DAG code.
@@ -203,6 +294,25 @@ A Fernet Key is generated during image build (`./mwaa-local-env build-image`) an
 containers started from that image. This key is used to [encrypt connection passwords in the Airflow DB](https://airflow.apache.org/docs/apache-airflow/stable/security/secrets/fernet.html).
 If changes are made to the image and it is rebuilt, you may get a new key that will not match the key used when
 the Airflow DB was initialized, in this case you will need to reset the DB (`./mwaa-local-env reset-db`).
+
+### SSL: CERTIFICATE_VERIFY_FAILED
+
+If you're on a corporate network with Zscaler SSL inspection:
+1. Run `just setup-zscaler` to export the certificate
+2. Rebuild the image: `just build`
+3. Restart: `just restart`
+
+### DAG not appearing
+
+1. Check for import errors: `just logs`
+2. Verify files are mounted: `just shell` then `ls /usr/local/airflow/dags/`
+3. Wait 30 seconds - Airflow scans DAGs periodically
+
+### Environment variable changes not taking effect
+
+```bash
+just restart  # Recreates container with new env vars
+```
 
 ## Security
 

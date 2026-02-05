@@ -26,10 +26,27 @@ services:
         max-size: 10m
         max-file: "3"
     volumes:
-      - "${PWD}/dags:/usr/local/airflow/dags"
       - "${PWD}/plugins:/usr/local/airflow/plugins"
       - "${PWD}/requirements:/usr/local/airflow/requirements"
       - "${PWD}/startup_script:/usr/local/airflow/startup"
+      # Base dags folder (for __init__.py and any local example DAGs)
+      - "${PWD}/dags:/usr/local/airflow/dags"
+      # # Mount requirements from dp_airflow_pipelines (auto-installed on startup)
+      - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/requirements:/usr/local/airflow/dp_requirements:ro"
+      # Supporting modules from dp_airflow_pipelines (default: sibling directory)
+      # Override DP_AIRFLOW_PATH in .env.localrunner if repos are elsewhere
+      - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/src/pipeline:/usr/local/airflow/dags/pipeline"
+      - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/src/shared:/usr/local/airflow/dags/shared"
+      - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/src/census:/usr/local/airflow/dags/census"
+      - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/src/dags/constants.py:/usr/local/airflow/dags/constants.py:ro"
+      # Mount MWAA startup scripts for shared environment variables
+      - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/mwaa:/usr/local/airflow/mwaa_scripts:ro"
+      # Mount AWS credentials for SSO access to Secrets Manager
+      - "${HOME}/.aws:/usr/local/airflow/.aws:ro"
+      # Mount CA certificates for SSL/Zscaler (if exists)
+      - "${HOME}/ca_certs:/usr/local/airflow/ca_certs:ro"
+      # NOTE: Specific DAGs are mounted via docker-compose-local.override.yml
+      # See docker-compose-local.override.example.yml for template
     ports:
       - "8080:8080"
     command: local-runner

@@ -5,3 +5,15 @@ dags/**/*.pyc
 /logs
 /db-data
 .DS_Store
+
+# Personal environment config (use .env.example as template)
+docker/config/.env.localrunner
+
+# Zscaler certificate (each user exports their own)
+docker/config/zscaler-root-ca.crt
+
+# Personal DAG mounts (use docker-compose-local.override.example.yml as template)
+docker/docker-compose-local.override.yml
+
+# ignore dags.init
+dags/

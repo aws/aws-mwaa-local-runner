@@ -31,6 +31,10 @@ COPY script/verification.sh /verification.sh
 COPY config/constraints.txt /constraints.txt
 COPY config/mwaa-base-providers-requirements.txt /mwaa-base-providers-requirements.txt
 
+# Add Zscaler Root CA certificate for SSL inspection environments
+COPY config/zscaler-root-ca.crt /etc/pki/ca-trust/source/anchors/zscaler-root-ca.crt
+RUN update-ca-trust extract
+
 RUN chmod u+x /systemlibs.sh && /systemlibs.sh
 RUN chmod u+x /bootstrap.sh && /bootstrap.sh
 RUN chmod u+x /generate_key.sh && /generate_key.sh

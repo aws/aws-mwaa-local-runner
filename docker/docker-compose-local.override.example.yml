@@ -1,0 +1,22 @@
+# =============================================================================
+# Personal DAG Mounts - Docker Compose Override
+# =============================================================================
+# Copy this file to docker-compose-local.override.yml and customize:
+#   cp docker-compose-local.override.example.yml docker-compose-local.override.yml
+#
+# This file is gitignored - your personal DAG selection stays local.
+# Add or remove DAGs as needed for your current work.
+# =============================================================================
+
+services:
+  local-runner:
+    volumes:
+      # Add the DAGs you're working on (one line per DAG)
+      # Format: dp_airflow_pipelines/src/dags/<dag_name>:/usr/local/airflow/dags/<dag_name>
+      
+      - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/src/dags/census_review_alert:/usr/local/airflow/dags/census_review_alert"
+      
+      # Examples of other DAGs you might add:
+      # - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/src/dags/another_dag:/usr/local/airflow/dags/another_dag"
+      # - "${DP_AIRFLOW_PATH:-${PWD}/../dp_airflow_pipelines}/src/dags/my_feature_dag:/usr/local/airflow/dags/my_feature_dag"
+

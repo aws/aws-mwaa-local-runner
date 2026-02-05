@@ -19,6 +19,7 @@ Before starting, ensure you have:
 
 - [ ] Docker Desktop installed and running
 - [ ] `just` command runner (`brew install just`)
+- [ ] Access to this role AWSAdministratorAccess
 - [ ] AWS CLI configured with SSO access
 - [ ] Access to `dp_airflow_pipelines` repo
 

@@ -11,5 +11,8 @@ virtualenv
 # Snowflake connector (needed for providers)
 snowflake-connector-python>=3.10.0
 
+# Required for loading .env files in constants modules
+python-dotenv==1.0.1
+
 # NOTE: Additional requirements are auto-installed from dp_airflow_pipelines
 # on container startup (see startup_script/startup.sh)

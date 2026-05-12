@@ -20,7 +20,7 @@ dnf install glibc -y
 # install system dependency to enable the installation of most Airflow extras
 dnf install -y gcc gcc-c++ cyrus-sasl-devel python3-devel python3-wheel make
 
-# Python 3.11 install
+# Python 3.12 install
 sudo mkdir python_install
 python_file=Python-$PYTHON_VERSION
 python_tar=$python_file.tar
@@ -40,8 +40,8 @@ pushd /python_install/$python_file
 make install -j $(nproc) # use -j to set the cores for the build
 popd
 
-# Upgrade pip
-pip3 install $PIP_OPTION --upgrade 'pip<23'
+# Upgrade pip, setuptools and wheel (setuptools not bundled in Python 3.12+)
+pip3 install $PIP_OPTION --upgrade pip setuptools wheel
 
 # openjdk is required for JDBC to work with Airflow
 dnf install -y java-17-amazon-corretto
@@ -65,10 +65,10 @@ fi
 # install mariadb_devel and its dependencies
 sudo rpm -ivh /mariadb_rpm/*
 
-sudo -u airflow pip3 install $PIP_OPTION --no-use-pep517 --constraint /constraints.txt poetry
+sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt poetry
 sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt cached-property
-sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt wheel 
-sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt --use-deprecated legacy-resolver apache-airflow[celery,statsd"${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}"]=="${AIRFLOW_VERSION}"
+sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt wheel
+sudo -u airflow pip3 install $PIP_OPTION --constraint /constraints.txt apache-airflow[celery,statsd"${AIRFLOW_DEPS:+,}${AIRFLOW_DEPS}"]=="${AIRFLOW_VERSION}"
 
 dnf install -y libxml2-devel libxslt-devel
 # install celery[sqs] and its dependencies

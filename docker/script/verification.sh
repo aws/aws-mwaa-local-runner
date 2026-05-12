@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-EXPECTED_AIRFLOW_VERSION="2.10.3"
+EXPECTED_AIRFLOW_VERSION="2.11.0"
 EXPECTED_WATCHTOWER_VERSION="3.3.1"
 
 validate_version_with_pip() {
@@ -10,9 +10,9 @@ validate_version_with_pip() {
   fi
 }
 
-if ! python3 -c 'import sys; assert sys.version_info[:2] == (3,11)' > /dev/null;
+if ! python3 -c 'import sys; assert sys.version_info[:2] == (3,12)' > /dev/null;
 then
-  echo "Validation Error: Python version 3.11 expected"
+  echo "Validation Error: Python version 3.12 expected"
 fi
 
 validate_version_with_pip "apache-airflow" "$EXPECTED_AIRFLOW_VERSION"

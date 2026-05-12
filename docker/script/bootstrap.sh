@@ -20,7 +20,7 @@ dnf install glibc -y
 # install system dependency to enable the installation of most Airflow extras
 dnf install -y gcc gcc-c++ cyrus-sasl-devel python3-devel python3-wheel make
 
-# Python 3.11 install
+# Python 3.12 install
 sudo mkdir python_install
 python_file=Python-$PYTHON_VERSION
 python_tar=$python_file.tar
